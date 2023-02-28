@@ -74,7 +74,6 @@ var renderPageNums = view => {
 };
 
 // Define a function to render park segments based on page number
-
 var pageNum = JSON.parse($pageForm.elements['page-num'].value);
 
 var renderParkChunks = pageNum => {
