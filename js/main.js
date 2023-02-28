@@ -2,6 +2,7 @@ var $main = document.querySelector('main');
 var $footerPages = document.querySelector('#page-num');
 var $pageForm = document.querySelector('form');
 var $pageSpan = document.querySelector('#total-pages');
+var corsPrefix = 'https://lfz-cors.herokuapp.com/?url=';
 
 var renderParkHighLvl = entry => {
   // Create elements
@@ -53,7 +54,8 @@ var renderParkHighLvl = entry => {
 
 // Define an XHR request meant for pagination
 var xhrPages = new XMLHttpRequest();
-xhrPages.open('GET', 'http://developer.nps.gov/api/v1/parks?limit=500&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo');
+var pagesUrl = encodeURIComponent('http://developer.nps.gov/api/v1/parks?limit=500&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo');
+xhrPages.open('GET', corsPrefix + pagesUrl);
 xhrPages.responseType = 'json';
 
 // Define a function to render page numbers based on total parks
@@ -77,13 +79,14 @@ var pageNum = JSON.parse($pageForm.elements['page-num'].value);
 
 var renderParkChunks = pageNum => {
   var xhrParkChunks = new XMLHttpRequest();
+  var parkChunkUrl = '';
 
   if (pageNum === 1) {
-    xhrParkChunks.open('GET', `http://developer.nps.gov/api/v1/parks?limit=10&start=${pageNum - 1}&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo`);
+    parkChunkUrl = encodeURIComponent(`http://developer.nps.gov/api/v1/parks?limit=10&start=${pageNum - 1}&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo`);
   } else {
-    xhrParkChunks.open('GET', `http://developer.nps.gov/api/v1/parks?limit=10&start=${(pageNum * 10) + 1}&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo`);
+    parkChunkUrl = encodeURIComponent(`http://developer.nps.gov/api/v1/parks?limit=10&start=${(pageNum * 10) + 1}&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo`);
   }
-
+  xhrParkChunks.open('GET', corsPrefix + parkChunkUrl);
   xhrParkChunks.responseType = 'json';
   xhrParkChunks.addEventListener('load', () => {
     for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
