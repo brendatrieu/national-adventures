@@ -1,6 +1,9 @@
 var $main = document.querySelector('main');
+var $footerPages = document.querySelector('#page-num');
+var $pageForm = document.querySelector('form');
+var $pageSpan = document.querySelector('#total-pages');
 
-var renderParkHighLvl = () => {
+var renderParkHighLvl = entry => {
   // Create elements
   var $parkDiv = document.createElement('div');
   var $imgDiv = document.createElement('div');
@@ -28,10 +31,11 @@ var renderParkHighLvl = () => {
   $button.textContent = 'More Info';
 
   // Assign nonstandard attributes and content
-  $img.setAttribute('src', null);
-  $img.setAttribute('alt', null);
-  $title.textContent = null;
-  $desc.textContent = null;
+  $parkDiv.setAttribute('id', entry.id);
+  $img.setAttribute('src', entry.images[0].url);
+  $img.setAttribute('alt', entry.images[0].altText);
+  $title.textContent = entry.fullName;
+  $desc.textContent = entry.description;
 
   // Append elements
   $buttonDiv.appendChild($button);
@@ -47,12 +51,49 @@ var renderParkHighLvl = () => {
   $main.appendChild($parkDiv);
 };
 
-renderParkHighLvl();
+// Define an XHR request meant for pagination
+var xhrPages = new XMLHttpRequest();
+xhrPages.open('GET', 'http://developer.nps.gov/api/v1/parks?limit=500&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo');
+xhrPages.responseType = 'json';
 
-var xhr = new XMLHttpRequest();
+// Define a function to render page numbers based on total parks
+var renderPageNums = view => {
+  var totalPages = 0;
+  if (view === 'default') {
+    totalPages = Math.ceil(xhrPages.response.total / 10);
+  }
+  for (var i = 2; i <= totalPages; i++) {
+    var $addtPage = document.createElement('option');
+    $addtPage.setAttribute('value', i);
+    $addtPage.textContent = i;
+    $footerPages.appendChild($addtPage);
+  }
+  $pageSpan.textContent = ' ' + totalPages;
+};
 
-xhr.open('GET', 'https://developer.nps.gov/api/v1/parks?limit=500&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo');
-xhr.responseType = 'json';
+// Define a function to render park segments based on page number
+
+var pageNum = JSON.parse($pageForm.elements['page-num'].value);
+
+var renderParkChunks = pageNum => {
+  var xhrParkChunks = new XMLHttpRequest();
+
+  if (pageNum === 1) {
+    xhrParkChunks.open('GET', `http://developer.nps.gov/api/v1/parks?limit=10&start=${pageNum - 1}&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo`);
+  } else {
+    xhrParkChunks.open('GET', `http://developer.nps.gov/api/v1/parks?limit=10&start=${(pageNum * 10) + 1}&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo`);
+  }
+
+  xhrParkChunks.responseType = 'json';
+  xhrParkChunks.addEventListener('load', () => {
+    for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
+      renderParkHighLvl(xhrParkChunks.response.data[i]);
+    }
+  });
+  xhrParkChunks.send();
+};
+
+renderParkChunks(pageNum);
 
 // var loadContacts = () => {
 //   for (var i = 0; i < 100; i++) {
@@ -131,6 +172,13 @@ xhr.responseType = 'json';
 //   }
 // };
 
-// xhr.addEventListener('load', loadActivities);
+// Event listeners
+xhrPages.addEventListener('load', () => {
+  renderPageNums(data.view);
+});
+xhrPages.send();
 
-// xhr.send();
+$pageForm.addEventListener('input', () => {
+  pageNum = $pageForm.elements['page-num'].value;
+  renderParkChunks(pageNum);
+});

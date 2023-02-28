@@ -39,7 +39,8 @@ nav {
   padding: 0.25rem 0.5rem;
 }
 
-button {
+button,
+select {
   border-radius: 0.3rem;
   border: none;
 }
@@ -56,8 +57,7 @@ i {
 
 img {
   width: 100%;
-
-  /* height: 100%; */
+  object-fit: cover;
   border-radius: 0.3rem 0.3rem 0 0;
 }
 
@@ -81,6 +81,18 @@ img {
   text-align: right;
 }
 
+.page-num {
+  font-family: Oswald, sans-serif;
+  color: #fefae0;
+  font-weight: 400;
+  text-align: center;
+  margin: 1rem auto;
+}
+
+#page-num {
+  margin: 0 0.25rem;
+}
+
 @media screen and (min-width: 768px) {
   .park-high-lvl {
     display: flex;
@@ -88,7 +100,6 @@ img {
 
   img {
     height: 100%;
-    object-fit: cover;
     border-radius: 0.3rem 0 0 0.3rem;
   }
 
