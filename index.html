@@ -3,17 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AJAX Project</title>
+  <title>National Adventures</title>
   <link rel="icon" href="images/favicon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap"
+    rel="stylesheet">
 </head>
 <body>
-  <header>
-  </header>
-  <main>
-  </main>
+  <nav>
+    <h3 class="nav-header">National Adventures</h3>
+    <ul>
+      <li>Favorites</li>
+    </ul>
+  </nav>
+  <div class="container">
+    <header>
+      <h1 class="page-header">National Parks</h1>
+      <button class="filter-bar col-third" type="button"><span>Filter</span><i class="fa-solid fa-filter"></i></button>
+    </header>
+    <main>
+      <div class="park-high-lvl col-full">
+        <div class="img-high-lvl col-third">
+          <img src="https://www.nps.gov/common/uploads/structured_data/3C861078-1DD8-B71B-0B774A242EF6A706.jpg" alt="The Memorial Building surrounded by fall colors">
+        </div>
+        <div class="details-high-lvl col-two-thirds">
+          <div class="details-high-lvl-header">
+            <h2 class="high-lvl-title">Abraham Lincoln Birthplace National Historical Park</h2>
+            <i class="fa-regular fa-star"></i>
+          </div>
+          <div class="high-lvl-desc">
+            <p>For over a century people from around the world have come to rural Central Kentucky to honor the humble beginnings of
+            our 16th president, Abraham Lincoln. His early life on Kentucky's frontier shaped his character and prepared him to lead
+            the nation through Civil War. Visit our country's first memorial to Lincoln, built with donations from young and old,
+            and the site of his childhood home.</p>
+            <button class="more-info" type="button">More Info</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
   <script src="js/data.js"></script>
   <script src="js/main.js"></script>
 </body>
