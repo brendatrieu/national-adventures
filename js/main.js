@@ -180,5 +180,6 @@ xhrPages.send();
 
 $pageForm.addEventListener('input', () => {
   pageNum = $pageForm.elements['page-num'].value;
+  $main.innerHTML = '';
   renderParkChunks(pageNum);
 });
