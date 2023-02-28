@@ -1,9 +1,7 @@
 .container,
 .nav-content {
-  max-width: 575px;
   margin: 0 auto;
   padding: 0 2rem;
-  width: 100%;
 }
 
 .col-full,
@@ -15,7 +13,6 @@
 .align-right {
   display: flex;
   justify-content: flex-end;
-  width: 100%;
 }
 
 @media screen and (min-width: 768px) {
@@ -26,11 +23,9 @@
 
   .col-two-fifths {
     width: 40%;
-    margin: 1rem 0;
   }
 
   .col-three-fifths {
     width: 60%;
-    margin: 1rem 0;
   }
 }
