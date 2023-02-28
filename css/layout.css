@@ -1,32 +1,36 @@
-.container {
+.container,
+.nav-content {
   max-width: 575px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   width: 100%;
 }
 
 .col-full,
-.col-third,
-.col-two-thirds {
+.col-two-fifths,
+.col-three-fifths {
   width: 100%;
 }
 
-.center-align {
-  justify-content: center;
+.align-right {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
 }
 
 @media screen and (min-width: 768px) {
-  .container {
+  .container,
+  .nav-content {
     max-width: 900px;
   }
 
-  .column-full,
-  .column-half {
-    padding: 0 0.75rem;
+  .col-two-fifths {
+    width: 40%;
+    margin: 1rem 0;
   }
 
-  .column-half {
-    width: 50%;
+  .col-three-fifths {
+    width: 60%;
     margin: 1rem 0;
   }
 }
