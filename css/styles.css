@@ -125,7 +125,7 @@ a {
   border: #dda15e solid 0.5px;
   border-radius: 0.3rem;
   max-width: 95%;
-  max-height: 15rem;
+  height: 12rem;
   overflow: scroll;
   overflow-x: hidden;
 }

@@ -148,8 +148,6 @@ var loadIndivPark = () => {
     var parkAddr = parkResp.addresses.filter(address => address.type === 'Physical')[0];
     var parkContacts = parkResp.contacts;
 
-    data.view = 'individual-park';
-
     $pageHeader.textContent = parkResp.fullName;
     $indivParkImg.setAttribute('src', parkResp.images[0].url);
     $indivParkImg.setAttribute('alt', parkResp.images[0].altText);
@@ -182,6 +180,8 @@ var viewSwap = () => {
   switch (data.view) {
     case 'home-page':
       $pageForm.reset();
+      renderPageNums(data.view);
+      renderParkChunks(1);
       $indivPark.classList.add('hidden');
       $homePage.classList.remove('hidden');
       $filterBar.classList.remove('hidden');
@@ -193,8 +193,12 @@ var viewSwap = () => {
       $homePage.classList.add('hidden');
       $filterBar.classList.add('hidden');
       $footer.classList.add('hidden');
+      loadIndivPark();
+      $topics.scrollTo(0, 0);
+      $activities.scrollTo(0, 0);
       break;
   }
+  window.scrollTo(0, 0);
 };
 
 // Event listeners
@@ -219,6 +223,7 @@ $homePage.addEventListener('click', event => {
     data.targetPark = event.target.closest('.park-high-lvl').getAttribute('id');
     data.view = 'individual-park';
     viewSwap();
-    loadIndivPark();
   }
 });
+
+document.addEventListener('DOMContentLoaded', viewSwap());
