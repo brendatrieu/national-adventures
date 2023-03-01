@@ -169,6 +169,7 @@ $navHeader.addEventListener('click', () => {
 $homePage.addEventListener('click', event => {
   if (event.target.className === 'more-info') {
     data.view = 'individual-park';
+    data.targetPark = event.target.closest('.park-high-lvl').getAttribute('id');
     viewSwap();
   }
 });
