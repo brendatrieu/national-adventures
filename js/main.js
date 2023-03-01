@@ -130,9 +130,10 @@ var renderParkChunks = pageNum => {
 renderParkChunks(pageNum);
 
 // Define a view-swapping function
-var viewSwap = view => {
-  switch (view) {
+var viewSwap = () => {
+  switch (data.view) {
     case 'home-page':
+      $pageForm.reset();
       $indivPark.classList.add('hidden');
       $homePage.classList.remove('hidden');
       $filterBar.classList.remove('hidden');
@@ -162,5 +163,12 @@ $pageForm.addEventListener('input', () => {
 
 $navHeader.addEventListener('click', () => {
   data.view = 'home-page';
-  viewSwap(data.view);
+  viewSwap();
+});
+
+$homePage.addEventListener('click', event => {
+  if (event.target.className === 'more-info') {
+    data.view = 'individual-park';
+    viewSwap();
+  }
 });
