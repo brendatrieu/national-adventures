@@ -35,6 +35,7 @@ nav {
 
 .page-header {
   color: #fefae0;
+  max-width: 80%;
 }
 
 .filter-bar {
