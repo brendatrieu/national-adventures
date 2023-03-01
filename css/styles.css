@@ -43,6 +43,7 @@ nav {
 }
 
 button,
+a,
 select {
   border-radius: 0.3rem;
   border: none;
@@ -77,7 +78,8 @@ img {
   scale: 1.5;
 }
 
-.more-info {
+.more-info,
+a {
   background-color: #dda15e;
   color: #fefae0;
   padding: 0.25rem 0.75rem;
@@ -104,11 +106,21 @@ img {
   height: 25vh;
 }
 
-.overflow {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  max-height: 15rem;
+.general-header {
+  margin: 0.5rem 0 0;
+  padding: 0 1.5rem;
+}
+
+a {
+  display: inline-block;
+  margin: 0.5rem;
+  text-decoration: none;
+  align-self: center;
+}
+
+.overflow > li {
+  margin: 0.05rem;
+  overflow-wrap: break-word;
 }
 
 @media screen and (min-width: 768px) {
@@ -125,5 +137,13 @@ img {
     height: 45vh;
     object-position: 60% 40%;
     border-radius: 0.3 0.3 0 0;
+  }
+
+  .overflow {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-width: 40%;
+    max-height: 15rem;
   }
 }
