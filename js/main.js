@@ -1,7 +1,12 @@
+var $navHeader = document.querySelector('.nav-header');
+var $pageHeader = document.querySelector('.page-header');
 var $homePage = document.querySelector('#home-page');
 var $footerPages = document.querySelector('#page-num');
 var $pageForm = document.querySelector('form');
 var $pageSpan = document.querySelector('#total-pages');
+var $filterBar = document.querySelector('.filter-bar');
+var $indivPark = document.querySelector('#individual-park');
+var $footer = document.querySelector('footer');
 
 // Define a function to create an API url for each case
 var createApiUrl = obj => {
@@ -124,6 +129,25 @@ var renderParkChunks = pageNum => {
 
 renderParkChunks(pageNum);
 
+// Define a view-swapping function
+var viewSwap = view => {
+  switch (view) {
+    case 'home-page':
+      $indivPark.classList.add('hidden');
+      $homePage.classList.remove('hidden');
+      $filterBar.classList.remove('hidden');
+      $footer.classList.remove('hidden');
+      $pageHeader.textContent = 'National Parks';
+      break;
+    case 'individual-park':
+      $indivPark.classList.remove('hidden');
+      $homePage.classList.add('hidden');
+      $filterBar.classList.add('hidden');
+      $footer.classList.add('hidden');
+      break;
+  }
+};
+
 // Event listeners
 xhrPages.addEventListener('load', () => {
   renderPageNums(data.view);
@@ -134,4 +158,9 @@ $pageForm.addEventListener('input', () => {
   pageNum = $pageForm.elements['page-num'].value;
   $homePage.innerHTML = '';
   renderParkChunks(pageNum);
+});
+
+$navHeader.addEventListener('click', () => {
+  data.view = 'home-page';
+  viewSwap(data.view);
 });
