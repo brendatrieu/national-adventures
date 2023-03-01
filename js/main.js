@@ -1,12 +1,21 @@
 var $navHeader = document.querySelector('.nav-header');
 var $pageHeader = document.querySelector('.page-header');
+var $filterBar = document.querySelector('.filter-bar');
 var $homePage = document.querySelector('#home-page');
-var $footerPages = document.querySelector('#page-num');
+var $indivPark = document.querySelector('#individual-park');
+var $indivParkImg = document.querySelector('#indiv-park-img');
+var $address = document.querySelector('#address');
+var $contactInfo = document.querySelector('#contact-info');
+var $directions = document.querySelector('#directions');
+var $directionUrl = document.querySelector('#directions-url');
+var $googleMaps = document.querySelector('#google-maps');
+var $weather = document.querySelector('#weather');
+var $topics = document.querySelector('#topics');
+var $activities = document.querySelector('#activities');
+var $footer = document.querySelector('footer');
 var $pageForm = document.querySelector('form');
 var $pageSpan = document.querySelector('#total-pages');
-var $filterBar = document.querySelector('.filter-bar');
-var $indivPark = document.querySelector('#individual-park');
-var $footer = document.querySelector('footer');
+var $footerPages = document.querySelector('#page-num');
 
 // Define a function to create an API url for each case
 var createApiUrl = obj => {
@@ -17,7 +26,7 @@ var createApiUrl = obj => {
     stateCode: null,
     limit: null,
     start: null,
-    query: null
+    q: null
   };
   var apiParams = '';
 
@@ -129,6 +138,45 @@ var renderParkChunks = pageNum => {
 
 renderParkChunks(pageNum);
 
+// Define a function to load the individual park view with corresponding data
+var loadIndivPark = () => {
+  var xhrPark = new XMLHttpRequest();
+  xhrPark.open('GET', createApiUrl({ q: JSON.stringify(data.targetPark) }));
+  xhrPark.responseType = 'json';
+  xhrPark.addEventListener('load', event => {
+    var parkResp = xhrPark.response.data[0];
+    var parkAddr = parkResp.addresses.filter(address => address.type === 'Physical')[0];
+    var parkContacts = parkResp.contacts;
+
+    data.view = 'individual-park';
+
+    $pageHeader.textContent = parkResp.fullName;
+    $indivParkImg.setAttribute('src', parkResp.images[0].url);
+    $indivParkImg.setAttribute('alt', parkResp.images[0].altText);
+    $address.textContent = `${parkAddr.line1}
+${parkAddr.city}, ${parkAddr.stateCode} ${parkAddr.postalCode}`;
+    $contactInfo.textContent = `${parkContacts.phoneNumbers[0].type}: ${parkContacts.phoneNumbers[0].phoneNumber}
+Email: ${parkContacts.emailAddresses[0].emailAddress}`;
+    $directions.textContent = parkResp.directionsInfo;
+    $directionUrl.setAttribute('href', parkResp.directionsUrl);
+    $googleMaps.setAttribute('href', `https://maps.google.com/?q=${parkResp.latitude},${parkResp.longitude}`);
+    $weather.textContent = parkResp.weatherInfo;
+
+    for (var t = 0; t < parkResp.topics.length; t++) {
+      var $liTop = document.createElement('li');
+      $liTop.textContent = parkResp.topics[t].name;
+      $topics.appendChild($liTop);
+    }
+
+    for (var a = 0; a < parkResp.activities.length; a++) {
+      var $liAct = document.createElement('li');
+      $liAct.textContent = parkResp.activities[a].name;
+      $activities.appendChild($liAct);
+    }
+  });
+  xhrPark.send();
+};
+
 // Define a view-swapping function
 var viewSwap = () => {
   switch (data.view) {
@@ -168,8 +216,9 @@ $navHeader.addEventListener('click', () => {
 
 $homePage.addEventListener('click', event => {
   if (event.target.className === 'more-info') {
-    data.view = 'individual-park';
     data.targetPark = event.target.closest('.park-high-lvl').getAttribute('id');
+    data.view = 'individual-park';
     viewSwap();
+    loadIndivPark();
   }
 });

@@ -119,9 +119,25 @@ a {
   align-self: center;
 }
 
+.overflow {
+  margin-bottom: 1.5rem;
+  padding: 0 1.5rem;
+  border: #dda15e solid 0.5px;
+  border-radius: 0.3rem;
+  max-width: 95%;
+  max-height: 15rem;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
 .overflow > li {
-  margin: 0.05rem;
   overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+#address,
+#contact-info {
+  white-space: pre;
 }
 
 @media screen and (min-width: 768px) {
@@ -138,13 +154,5 @@ a {
     height: 45vh;
     object-position: 60% 40%;
     border-radius: 0.3 0.3 0 0;
-  }
-
-  .overflow {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    max-width: 40%;
-    max-height: 15rem;
   }
 }
