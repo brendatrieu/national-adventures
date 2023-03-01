@@ -8,7 +8,9 @@ body {
 .page-header,
 .high-lvl-title,
 .more-info,
-.filter-bar {
+.filter-bar,
+.general-header,
+.subheading {
   font-family: Oswald, sans-serif;
   font-weight: 300;
 }
@@ -20,7 +22,8 @@ nav {
 
 .nav-content,
 .details-high-lvl-header,
-.filter-bar {
+.filter-bar,
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -92,13 +95,35 @@ img {
   margin: 0 0.25rem;
 }
 
+#individual-park {
+  background-color: white;
+  border-radius: 0.3rem;
+}
+
+#indiv-park-img {
+  height: 25vh;
+}
+
+.overflow {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-height: 15rem;
+}
+
 @media screen and (min-width: 768px) {
   .park-high-lvl {
     display: flex;
   }
 
-  img {
+  .img-high-lvl {
     height: 100%;
     border-radius: 0.3rem 0 0 0.3rem;
+  }
+
+  #indiv-park-img {
+    height: 45vh;
+    object-position: 60% 40%;
+    border-radius: 0.3 0.3 0 0;
   }
 }

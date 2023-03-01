@@ -49,7 +49,8 @@ var renderParkHighLvl = entry => {
 
   // Assign standard attributes and content
   $parkDiv.className = 'park-high-lvl col-full';
-  $imgDiv.className = 'img-high-lvl col-two-fifths';
+  $imgDiv.className = 'col-two-fifths';
+  $img.className = 'img-high-lvl';
   $detailsDiv.className = 'details-high-lvl col-three-fifths';
   $titleDiv.className = 'details-high-lvl-header';
   $title.className = 'high-lvl-title';
@@ -89,7 +90,7 @@ xhrPages.responseType = 'json';
 // Define a function to render page numbers based on total parks
 var renderPageNums = view => {
   var totalPages = 0;
-  if (view === 'default') {
+  if (view === 'home-page') {
     totalPages = Math.ceil(xhrPages.response.total / 10);
   }
   for (var i = 2; i <= totalPages; i++) {

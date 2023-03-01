@@ -1,3 +1,7 @@
+.hidden {
+  display: none !important;
+}
+
 .container,
 .nav-content {
   margin: 0 auto;
@@ -8,6 +12,10 @@
 .col-two-fifths,
 .col-three-fifths {
   width: 100%;
+}
+
+.flex {
+  display: flex;
 }
 
 .align-right {
@@ -27,5 +35,9 @@
 
   .col-three-fifths {
     width: 60%;
+  }
+
+  .col-half {
+    width: 50%;
   }
 }
