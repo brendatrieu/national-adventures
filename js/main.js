@@ -3,6 +3,7 @@ var $pageHeader = document.querySelector('.page-header');
 var $headerFav = document.querySelector('#header-fav');
 var $filterBar = document.querySelector('.filter-bar');
 var $homePage = document.querySelector('#home-page');
+var $favorites = document.querySelector('#favorites');
 var $indivPark = document.querySelector('#individual-park');
 var $indivParkImg = document.querySelector('#indiv-park-img');
 var $address = document.querySelector('#address');
@@ -48,7 +49,7 @@ var createApiUrl = obj => {
 };
 
 // Define a function to create a high level overview of each park
-var renderParkHighLvl = entry => {
+var renderParkHighLvl = (view, entry) => {
   // Create elements
   var $parkDiv = document.createElement('div');
   var $imgDiv = document.createElement('div');
@@ -94,7 +95,13 @@ var renderParkHighLvl = entry => {
   $imgDiv.appendChild($img);
   $parkDiv.appendChild($imgDiv);
   $parkDiv.appendChild($detailsDiv);
-  $homePage.appendChild($parkDiv);
+
+  if (view === 'home-page') {
+    $homePage.appendChild($parkDiv);
+  } else if (view === 'favorites') {
+    $favorites.appendChild($parkDiv);
+  }
+
 };
 
 // Define an XHR request meant for pagination
@@ -131,13 +138,11 @@ var renderParkChunks = pageNum => {
   xhrParkChunks.responseType = 'json';
   xhrParkChunks.addEventListener('load', () => {
     for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
-      renderParkHighLvl(xhrParkChunks.response.data[i]);
+      renderParkHighLvl(data.view, xhrParkChunks.response.data[i]);
     }
   });
   xhrParkChunks.send();
 };
-
-// renderParkChunks(data.pageNum);
 
 // Define a function to load the individual park view with corresponding data
 var loadIndivPark = () => {
