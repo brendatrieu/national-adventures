@@ -236,11 +236,13 @@ var viewSwap = () => {
 var favToggle = event => {
   var targetIndex = 0;
   if (event.target.matches('.fa-regular')) {
+    event.target.className = 'fa-solid fa-star';
     if (data.view === 'individual-park') {
       return data.favorites.push(data.targetPark);
     }
     return data.favorites.push(event.target.closest('.park-high-lvl').getAttribute('id'));
   }
+  event.target.className = 'fa-regular fa-star';
   if (data.view === 'individual-park') {
     targetIndex = data.favorites.indexOf(data.targetPark);
     return data.favorites.splice(targetIndex, 1);
