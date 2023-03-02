@@ -137,7 +137,7 @@ var renderParkChunks = pageNum => {
   xhrParkChunks.send();
 };
 
-renderParkChunks(data.pageNum);
+// renderParkChunks(data.pageNum);
 
 // Define a function to load the individual park view with corresponding data
 var loadIndivPark = () => {
@@ -196,6 +196,10 @@ Email: ${parkContacts.emailAddresses[0].emailAddress}`;
 
 // Define a view-swapping function
 var viewSwap = () => {
+  if (data.reloaded === false) {
+    data.pageNum = 1;
+    data.view = 'home-page';
+  }
   switch (data.view) {
     case 'home-page':
       $pageForm.reset();
