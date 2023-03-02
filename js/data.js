@@ -1,6 +1,15 @@
 /* exported data */
 
 var data = {
-  view: 'default',
-  unfiltered: 'https://developer.nps.gov/api/v1/parks?limit=500&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo'
+  view: 'home-page',
+  pageNum: 1,
+  targetPark: ''
 };
+
+window.addEventListener('beforeunload', () => {
+  localStorage.setItem('nationalAdventures', JSON.stringify(data));
+});
+
+if (localStorage.getItem('nationalAdventures')) {
+  data = JSON.parse(localStorage.getItem('nationalAdventures'));
+}

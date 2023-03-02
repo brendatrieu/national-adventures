@@ -8,9 +8,19 @@ body {
 .page-header,
 .high-lvl-title,
 .more-info,
-.filter-bar {
+.filter-bar,
+.general-header,
+.subheading {
   font-family: Oswald, sans-serif;
   font-weight: 300;
+}
+
+.nav-header,
+a,
+button,
+i,
+select {
+  cursor: pointer;
 }
 
 nav {
@@ -20,7 +30,8 @@ nav {
 
 .nav-content,
 .details-high-lvl-header,
-.filter-bar {
+.filter-bar,
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -32,6 +43,7 @@ nav {
 
 .page-header {
   color: #fefae0;
+  max-width: 80%;
 }
 
 .filter-bar {
@@ -40,6 +52,7 @@ nav {
 }
 
 button,
+a,
 select {
   border-radius: 0.3rem;
   border: none;
@@ -74,7 +87,8 @@ img {
   scale: 1.5;
 }
 
-.more-info {
+.more-info,
+a {
   background-color: #dda15e;
   color: #fefae0;
   padding: 0.25rem 0.75rem;
@@ -92,13 +106,69 @@ img {
   margin: 0 0.25rem;
 }
 
+#individual-park {
+  background-color: white;
+  border-radius: 0.3rem;
+}
+
+#indiv-park-img {
+  height: 25vh;
+}
+
+.general-header {
+  margin: 0.5rem 0 0;
+  padding: 0 1.5rem;
+}
+
+.subheading {
+  margin: 0.75rem 0;
+}
+
+a {
+  display: inline-block;
+  margin: 0.5rem;
+  text-decoration: none;
+  text-align: center;
+  align-self: center;
+}
+
+p {
+  overflow-wrap: break-word;
+}
+
+.overflow {
+  margin-bottom: 1.5rem;
+  padding: 0 1.5rem;
+  border: #dda15e solid 0.5px;
+  border-radius: 0.3rem;
+  max-width: 95%;
+  height: 12rem;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.overflow > li {
+  overflow-wrap: break-word;
+}
+
+#address,
+#contact-info {
+  white-space: pre-wrap;
+}
+
 @media screen and (min-width: 768px) {
   .park-high-lvl {
     display: flex;
   }
 
-  img {
+  .img-high-lvl {
     height: 100%;
     border-radius: 0.3rem 0 0 0.3rem;
+  }
+
+  #indiv-park-img {
+    height: 45vh;
+    object-position: 60% 40%;
+    border-radius: 0.3 0.3 0 0;
   }
 }

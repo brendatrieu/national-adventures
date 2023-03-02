@@ -1,3 +1,7 @@
+.hidden {
+  display: none !important;
+}
+
 .container,
 .nav-content {
   margin: 0 auto;
@@ -5,8 +9,11 @@
 }
 
 .col-full,
+.col-fifth,
 .col-two-fifths,
-.col-three-fifths {
+.col-half,
+.col-three-fifths,
+.col-four-fifths {
   width: 100%;
 }
 
@@ -15,10 +22,20 @@
   justify-content: flex-end;
 }
 
+.direction-swap {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.5rem;
+}
+
 @media screen and (min-width: 768px) {
   .container,
   .nav-content {
     max-width: 900px;
+  }
+
+  .col-fifth {
+    width: 20%;
   }
 
   .col-two-fifths {
@@ -27,5 +44,17 @@
 
   .col-three-fifths {
     width: 60%;
+  }
+
+  .col-half {
+    width: 50%;
+  }
+
+  .col-four-fifths {
+    width: 80%;
+  }
+
+  .direction-swap {
+    flex-direction: row;
   }
 }

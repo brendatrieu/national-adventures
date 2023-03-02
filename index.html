@@ -28,18 +28,63 @@
   </nav>
   <div class="container">
     <header>
-      <h1 class="page-header">National Parks</h1>
+      <div class="col-full header">
+        <h1 class="page-header">National Parks</h1>
+        <i id="header-fav" class="hidden fa-regular fa-star"></i>
+      </div>
       <button class="filter-bar col-two-fifths" type="button"><span>Filter</span><i class="fa-solid fa-filter"></i></button>
     </header>
     <main>
+      <section class="" id="home-page">
 
+      </section>
+      <section class="hidden" id="individual-park">
+        <div class="col-full">
+          <img id="indiv-park-img" src=""
+            alt="Preview of national park">
+        </div>
+        <h2 class="general-header">Park Information</h2>
+        <div class="direction-swap">
+          <div class="col-two-fifths">
+            <h4 class="subheading">Physical Address</h4>
+            <p id="address"></p>
+            <h4 class="subheading">Contact Information</h4>
+            <p id="contact-info"></p>
+          </div>
+          <div class="col-three-fifths">
+            <h4 class="subheading">Directions:</h4>
+            <p id="directions"></p>
+            <div class="direction-swap">
+              <a id="directions-url" target="blank" href="">Additional Direction Details</a>
+              <a id="google-maps" target="blank" href="">Google Maps</a>
+            </div>
+            <h4 class="subheading">Weather Information:</h4>
+            <p id="weather"></p>
+          </div>
+        </div>
+        <h2 class="general-header">Things to Do</h2>
+        <div class="direction-swap">
+          <div class="col-half">
+            <h4 class="subheading">Topics: </h4>
+            <ul class="overflow" id="topics">
+
+            </ul>
+          </div>
+          <div class="col-half">
+            <h4 class="subheading">Activities: </h4>
+            <ul class="overflow" id="activities">
+
+            </ul>
+          </div>
+        </div>
+      </section>
     </main>
     <footer class="col-full">
       <form method="get" class="page-num">
-        <label for="pageNum">
+        <label>
           Page
           <select name="pageNum" id="page-num">
-            <option value="1">1</option>
+
           </select>
           of <span id="total-pages"></span>
         </label>
