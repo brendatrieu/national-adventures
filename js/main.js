@@ -27,14 +27,13 @@ var createApiUrl = obj => {
   var urlStart = 'http://developer.nps.gov/api/v1/parks?';
   var urlEnd = '&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo';
   var apiObj = {
-    parkCode: null,
-    stateCode: null,
-    limit: null,
-    start: null,
-    q: null
+    parkCode: '',
+    stateCode: '',
+    limit: '',
+    start: '',
+    q: ''
   };
   var apiParams = '';
-
   for (var key in obj) {
     if (Object.hasOwn(apiObj, key) === false) {
       return;
@@ -50,14 +49,17 @@ var createApiUrl = obj => {
         return 0;
       });
       apiObj[key] = obj[key].join(',');
+    } else {
+      apiObj[key] = obj[key];
     }
   }
 
   for (var param in apiObj) {
-    if (apiObj[param] !== null) {
+    if (apiObj[param] !== '') {
       apiParams += `&${param + '=' + apiObj[param]}`;
     }
   }
+
   return corsPrefix + encodeURIComponent(urlStart + apiParams + urlEnd);
 };
 
@@ -83,7 +85,6 @@ var renderParkHighLvl = (view, entry) => {
   $detailsDiv.className = 'details-high-lvl col-three-fifths';
   $titleDiv.className = 'details-high-lvl-header';
   $title.className = 'high-lvl-title';
-  $favIcon.className = 'fa-regular fa-star';
   $descDiv.className = 'high-lvl-desc';
   $buttonDiv.className = 'align-right';
   $button.className = 'more-info';
@@ -96,6 +97,10 @@ var renderParkHighLvl = (view, entry) => {
   $img.setAttribute('alt', entry.images[0].altText);
   $title.textContent = entry.fullName;
   $desc.textContent = entry.description;
+  $favIcon.className = 'fa-regular fa-star';
+  if (data.favorites.includes(entry.parkCode)) {
+    $favIcon.className = 'fa-solid fa-star';
+  }
 
   // Append elements
   $buttonDiv.appendChild($button);
@@ -251,7 +256,10 @@ var viewSwap = () => {
       $homePage.classList.add('hidden');
       $filterBar.classList.add('hidden');
       $footer.classList.add('hidden');
-      $headerFav.classList.remove('hidden');
+      $headerFav.className = 'fa-regular fa-star';
+      if (data.favorites.includes(data.targetPark)) {
+        $headerFav.className = 'fa-solid fa-star';
+      }
       loadIndivPark();
       $topics.scrollTo(0, 0);
       $activities.scrollTo(0, 0);
