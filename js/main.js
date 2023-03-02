@@ -231,6 +231,19 @@ var viewSwap = () => {
   window.scrollTo(0, 0);
 };
 
+// Define a function to favorite/unfavorite parks
+var favToggle = event => {
+  if (event.target.className.matches('fa-regular')) {
+    if (data.view === 'individual park') {
+      data.favorites.push(data.targetPark);
+      return;
+    }
+    data.favorites.push(event.target.closest('.park-high-lvl').getAttribute('id'));
+  }
+};
+
+favToggle();
+
 // Event listeners
 xhrPages.addEventListener('load', () => {
   renderPageNums(data.view);
