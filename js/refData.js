@@ -76,3 +76,11 @@
 //     $printedData.appendChild($ul);
 //   }
 // };
+// var targetIndex = 0;
+// event.target.className = 'fa-regular fa-star';
+// if (data.view === 'individual-park') {
+//   targetIndex = data.favorites.indexOf(data.targetPark);
+//   return data.favorites.splice(targetIndex, 1);
+// }
+// targetIndex = data.favorites.indexOf(event.target.closest('.park-high-lvl').getAttribute('id'));
+// return data.favorites.splice(targetIndex, 1);
