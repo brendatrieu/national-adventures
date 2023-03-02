@@ -15,6 +15,14 @@ body {
   font-weight: 300;
 }
 
+.nav-header,
+a,
+button,
+i,
+select {
+  cursor: pointer;
+}
+
 nav {
   color: #fefae0;
   background-color: #264027;
@@ -112,11 +120,20 @@ a {
   padding: 0 1.5rem;
 }
 
+.subheading {
+  margin: 0.75rem 0;
+}
+
 a {
   display: inline-block;
   margin: 0.5rem;
   text-decoration: none;
+  text-align: center;
   align-self: center;
+}
+
+p {
+  overflow-wrap: break-word;
 }
 
 .overflow {
@@ -132,12 +149,11 @@ a {
 
 .overflow > li {
   overflow-wrap: break-word;
-  max-width: 100%;
 }
 
 #address,
 #contact-info {
-  white-space: pre;
+  white-space: pre-wrap;
 }
 
 @media screen and (min-width: 768px) {

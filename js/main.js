@@ -1,5 +1,6 @@
 var $navHeader = document.querySelector('.nav-header');
 var $pageHeader = document.querySelector('.page-header');
+var $headerFav = document.querySelector('#header-fav');
 var $filterBar = document.querySelector('.filter-bar');
 var $homePage = document.querySelector('#home-page');
 var $indivPark = document.querySelector('#individual-park');
@@ -13,7 +14,7 @@ var $weather = document.querySelector('#weather');
 var $topics = document.querySelector('#topics');
 var $activities = document.querySelector('#activities');
 var $footer = document.querySelector('footer');
-var $pageForm = document.querySelector('form');
+var $pageForm = document.querySelector('.page-num');
 var $pageSpan = document.querySelector('#total-pages');
 var $footerPages = document.querySelector('#page-num');
 
@@ -103,25 +104,25 @@ xhrPages.responseType = 'json';
 
 // Define a function to render page numbers based on total parks
 var renderPageNums = view => {
+  $footerPages.innerHTML = '';
   var totalPages = 0;
   if (view === 'home-page') {
     totalPages = Math.ceil(xhrPages.response.total / 10);
   }
-  for (var i = 2; i <= totalPages; i++) {
+  for (var i = 1; i <= totalPages; i++) {
     var $addtPage = document.createElement('option');
     $addtPage.setAttribute('value', i);
     $addtPage.textContent = i;
     $footerPages.appendChild($addtPage);
   }
   $pageSpan.textContent = ' ' + totalPages;
+  $footerPages.value = data.pageNum;
 };
 
 // Define a function to render park segments based on page number
-var pageNum = JSON.parse($pageForm.elements['page-num'].value);
-
 var renderParkChunks = pageNum => {
   var xhrParkChunks = new XMLHttpRequest();
-
+  $homePage.innerHTML = '';
   if (pageNum === 1) {
     xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: 0 }));
   } else {
@@ -136,7 +137,7 @@ var renderParkChunks = pageNum => {
   xhrParkChunks.send();
 };
 
-renderParkChunks(pageNum);
+renderParkChunks(data.pageNum);
 
 // Define a function to load the individual park view with corresponding data
 var loadIndivPark = () => {
@@ -160,6 +161,24 @@ Email: ${parkContacts.emailAddresses[0].emailAddress}`;
     $googleMaps.setAttribute('href', `https://maps.google.com/?q=${parkResp.latitude},${parkResp.longitude}`);
     $weather.textContent = parkResp.weatherInfo;
 
+    parkResp.topics.sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      } else if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    });
+
+    parkResp.activities.sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      } else if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    });
+
     for (var t = 0; t < parkResp.topics.length; t++) {
       var $liTop = document.createElement('li');
       $liTop.textContent = parkResp.topics[t].name;
@@ -180,19 +199,21 @@ var viewSwap = () => {
   switch (data.view) {
     case 'home-page':
       $pageForm.reset();
-      renderPageNums(data.view);
-      renderParkChunks(1);
+      renderParkChunks(data.pageNum);
       $indivPark.classList.add('hidden');
       $homePage.classList.remove('hidden');
       $filterBar.classList.remove('hidden');
       $footer.classList.remove('hidden');
       $pageHeader.textContent = 'National Parks';
+      $headerFav.classList.add('hidden');
       break;
     case 'individual-park':
+      data.pageNum = 1;
       $indivPark.classList.remove('hidden');
       $homePage.classList.add('hidden');
       $filterBar.classList.add('hidden');
       $footer.classList.add('hidden');
+      $headerFav.classList.remove('hidden');
       loadIndivPark();
       $topics.scrollTo(0, 0);
       $activities.scrollTo(0, 0);
@@ -208,13 +229,15 @@ xhrPages.addEventListener('load', () => {
 xhrPages.send();
 
 $pageForm.addEventListener('input', () => {
-  pageNum = $pageForm.elements['page-num'].value;
+  data.pageNum = $pageForm.elements['page-num'].value;
   $homePage.innerHTML = '';
-  renderParkChunks(pageNum);
+  renderParkChunks(data.pageNum);
 });
 
 $navHeader.addEventListener('click', () => {
   data.view = 'home-page';
+  data.pageNum = 1;
+  renderPageNums(data.view);
   viewSwap();
 });
 

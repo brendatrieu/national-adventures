@@ -2,6 +2,7 @@
 
 var data = {
   view: 'home-page',
+  pageNum: 1,
   targetPark: ''
 };
 
