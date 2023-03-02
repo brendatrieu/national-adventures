@@ -1,4 +1,5 @@
 var $navHeader = document.querySelector('.nav-header');
+var $container = document.querySelector('.container');
 var $pageHeader = document.querySelector('.page-header');
 var $headerFav = document.querySelector('#header-fav');
 var $filterBar = document.querySelector('.filter-bar');
@@ -78,7 +79,7 @@ var renderParkHighLvl = (view, entry) => {
   $button.textContent = 'More Info';
 
   // Assign nonstandard attributes and content
-  $parkDiv.setAttribute('id', entry.id);
+  $parkDiv.setAttribute('id', entry.parkCode);
   $img.setAttribute('src', entry.images[0].url);
   $img.setAttribute('alt', entry.images[0].altText);
   $title.textContent = entry.fullName;
@@ -233,16 +234,20 @@ var viewSwap = () => {
 
 // Define a function to favorite/unfavorite parks
 var favToggle = event => {
-  if (event.target.className.matches('fa-regular')) {
-    if (data.view === 'individual park') {
-      data.favorites.push(data.targetPark);
-      return;
+  var targetIndex = 0;
+  if (event.target.matches('.fa-regular')) {
+    if (data.view === 'individual-park') {
+      return data.favorites.push(data.targetPark);
     }
-    data.favorites.push(event.target.closest('.park-high-lvl').getAttribute('id'));
+    return data.favorites.push(event.target.closest('.park-high-lvl').getAttribute('id'));
   }
+  if (data.view === 'individual-park') {
+    targetIndex = data.favorites.indexOf(data.targetPark);
+    return data.favorites.splice(targetIndex, 1);
+  }
+  targetIndex = data.favorites.indexOf(event.target.closest('.park-high-lvl').getAttribute('id'));
+  return data.favorites.splice(targetIndex, 1);
 };
-
-favToggle();
 
 // Event listeners
 xhrPages.addEventListener('load', () => {
@@ -268,6 +273,12 @@ $homePage.addEventListener('click', event => {
     data.targetPark = event.target.closest('.park-high-lvl').getAttribute('id');
     data.view = 'individual-park';
     viewSwap();
+  }
+});
+
+$container.addEventListener('click', event => {
+  if (event.target.matches('.fa-star')) {
+    favToggle(event);
   }
 });
 
