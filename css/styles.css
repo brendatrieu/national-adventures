@@ -19,7 +19,8 @@ body {
 a,
 button,
 i,
-select {
+select,
+.nav-links {
   cursor: pointer;
 }
 

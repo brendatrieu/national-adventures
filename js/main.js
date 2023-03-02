@@ -1,10 +1,11 @@
 var $navHeader = document.querySelector('.nav-header');
+var $navLinks = document.querySelector('.nav-links');
 var $container = document.querySelector('.container');
 var $pageHeader = document.querySelector('.page-header');
 var $headerFav = document.querySelector('#header-fav');
 var $filterBar = document.querySelector('.filter-bar');
 var $homePage = document.querySelector('#home-page');
-var $favorites = document.querySelector('#favorites');
+var $favorites = document.querySelector('#Favorites');
 var $indivPark = document.querySelector('#individual-park');
 var $indivParkImg = document.querySelector('#indiv-park-img');
 var $address = document.querySelector('#address');
@@ -228,6 +229,17 @@ var viewSwap = () => {
       $topics.scrollTo(0, 0);
       $activities.scrollTo(0, 0);
       break;
+    case 'Favorites':
+      $pageForm.reset();
+      renderParkChunks(data.pageNum);
+      $homePage.classList.add('hidden');
+      $indivPark.classList.add('hidden');
+      $favorites.classList.remove('hidden');
+      $filterBar.classList.remove('hidden');
+      $footer.classList.remove('hidden');
+      $pageHeader.textContent = 'Favorites';
+      $headerFav.classList.add('hidden');
+      break;
   }
   window.scrollTo(0, 0);
 };
@@ -261,6 +273,11 @@ $pageForm.addEventListener('input', () => {
   data.pageNum = $pageForm.elements['page-num'].value;
   $homePage.innerHTML = '';
   renderParkChunks(data.pageNum);
+});
+
+$navLinks.addEventListener('click', event => {
+  data.view = event.target.textContent;
+  viewSwap();
 });
 
 $navHeader.addEventListener('click', () => {
