@@ -8,6 +8,7 @@ var $homePage = document.querySelector('#home-page');
 var $favorites = document.querySelector('#Favorites');
 var $noResults = document.querySelector('#no-results');
 var $favParks = document.querySelector('#fav-parks');
+var $findParks = document.querySelector('.find-parks');
 var $indivPark = document.querySelector('#individual-park');
 var $indivParkImg = document.querySelector('#indiv-park-img');
 var $address = document.querySelector('#address');
@@ -137,6 +138,8 @@ var renderPageNums = view => {
     if (data.view === 'Favorites') {
       if (data.favorites.length >= 10) {
         totalPages = Math.ceil(data.favorites.length / 10);
+      } else if (!data.favorites.length) {
+        $footer.classList.add('hidden');
       } else {
         totalPages = 1;
       }
@@ -336,6 +339,11 @@ $container.addEventListener('click', event => {
   if (event.target.matches('.fa-star')) {
     favToggle(event);
   }
+});
+
+$findParks.addEventListener('click', () => {
+  data.view = 'home-page';
+  viewSwap();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
