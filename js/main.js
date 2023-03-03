@@ -4,6 +4,9 @@ var $container = document.querySelector('.container');
 var $pageHeader = document.querySelector('.page-header');
 var $headerFav = document.querySelector('#header-fav');
 var $filterBar = document.querySelector('.filter-bar');
+var $stateOptions = document.querySelector('#state-options');
+var $activityOptions = document.querySelector('#activity-options');
+var $topicOptions = document.querySelector('#topic-options');
 var $homePage = document.querySelector('#home-page');
 var $favorites = document.querySelector('#Favorites');
 var $noResults = document.querySelector('#no-results');
@@ -327,6 +330,91 @@ var favToggle = event => {
     }
   }
 };
+
+// Define a function to add state options to the dropdown menu
+var filterDropdowns = () => {
+  // Load states
+  data.states.forEach(state => {
+    var $label = document.createElement('label');
+    var $input = document.createElement('input');
+
+    $input.setAttribute('type', 'checkbox');
+    $input.setAttribute('name', 'state');
+    $input.setAttribute('value', state.abbreviation);
+
+    $label.appendChild($input);
+    $label.insertAdjacentText('beforeend', '' + state.name);
+    $stateOptions.appendChild($label);
+  });
+
+  // Load activities
+  var xhrAct = new XMLHttpRequest();
+  var activitiesList = [];
+  xhrAct.open('GET', 'https://developer.nps.gov/api/v1/activities/parks?api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo');
+  xhrAct.responseType = 'json';
+  xhrAct.addEventListener('load', () => {
+    for (var a = 0; a < xhrAct.response.data.length; a++) {
+      activitiesList.push(xhrAct.response.data[a].name);
+      activitiesList.sort((a, b) => {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    activitiesList.forEach(act => {
+      var $label = document.createElement('label');
+      var $input = document.createElement('input');
+
+      $input.setAttribute('type', 'checkbox');
+      $input.setAttribute('name', 'activity');
+      $input.setAttribute('value', act);
+
+      $label.appendChild($input);
+      $label.insertAdjacentText('beforeend', '' + act);
+      $activityOptions.appendChild($label);
+    });
+  });
+  xhrAct.send();
+
+  // Load topics
+  var xhrTop = new XMLHttpRequest();
+  var topicsList = [];
+  xhrTop.open('GET', 'https://developer.nps.gov/api/v1/topics?limit=100&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo');
+  xhrTop.responseType = 'json';
+  xhrTop.addEventListener('load', () => {
+    for (var t = 0; t < xhrTop.response.data.length; t++) {
+      topicsList.push(xhrTop.response.data[t].name);
+      topicsList.sort((a, b) => {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    topicsList.forEach(top => {
+      var $label = document.createElement('label');
+      var $input = document.createElement('input');
+
+      $input.setAttribute('type', 'checkbox');
+      $input.setAttribute('name', 'topic');
+      $input.setAttribute('value', top);
+
+      $label.appendChild($input);
+      $label.insertAdjacentText('beforeend', '' + top);
+      $topicOptions.appendChild($label);
+    });
+  });
+  xhrTop.send();
+};
+
+filterDropdowns();
 
 // Event listeners
 
