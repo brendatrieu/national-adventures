@@ -301,12 +301,24 @@ var viewSwap = () => {
 
 // Define a function to favorite/unfavorite parks
 var favToggle = event => {
+  var targetIndex = 0;
+
   if (event.target.matches('.fa-regular')) {
     event.target.className = 'fa-solid fa-star';
     if (data.view === 'individual-park') {
       return data.favorites.push(data.targetPark);
     }
     return data.favorites.push(event.target.closest('.park-high-lvl').getAttribute('id'));
+  }
+
+  if (event.target.matches('.fa-solid')) {
+    event.target.className = 'fa-regular fa-star';
+    if (data.view === 'individual-park') {
+      targetIndex = data.favorites.indexOf(data.targetPark);
+      return data.favorites.splice(targetIndex, 1);
+    }
+    targetIndex = data.favorites.indexOf(event.target.closest('.park-high-lvl').getAttribute('id'));
+    return data.favorites.splice(targetIndex, 1);
   }
 };
 
