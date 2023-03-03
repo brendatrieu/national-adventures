@@ -161,8 +161,8 @@ var renderPageNums = view => {
 var renderParkChunks = pageNum => {
   var xhrParkChunks = new XMLHttpRequest();
   $homePage.innerHTML = '';
-
   $favParks.innerHTML = '';
+
   if (data.view === 'home-page') {
     if (pageNum === 1) {
       xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: 0 }));
@@ -188,7 +188,7 @@ var renderParkChunks = pageNum => {
 // Define a function to load the individual park view with corresponding data
 var loadIndivPark = () => {
   var xhrPark = new XMLHttpRequest();
-  xhrPark.open('GET', createApiUrl({ q: JSON.stringify(data.targetPark) }));
+  xhrPark.open('GET', createApiUrl({ parkCode: data.targetPark }));
   xhrPark.responseType = 'json';
   xhrPark.addEventListener('load', event => {
     var parkResp = xhrPark.response.data[0];
@@ -277,20 +277,23 @@ var viewSwap = () => {
     case 'Favorites':
       $pageForm.reset();
       data.pageNum = 1;
-      if (data.favorites.length < 1) {
-        $noResults.classList.remove('hidden');
-      }
-      if (data.favorites.length > 0) {
-        $noResults.classList.add('hidden');
-        renderParkChunks(data.pageNum);
-      }
       $homePage.classList.add('hidden');
       $indivPark.classList.add('hidden');
       $favorites.classList.remove('hidden');
       $filterBar.classList.remove('hidden');
-      $footer.classList.remove('hidden');
       $pageHeader.textContent = 'Favorites';
       $headerFav.classList.add('hidden');
+      if (data.favorites.length < 1) {
+        $favParks.className = 'hidden';
+        $noResults.classList.remove('hidden');
+        $footer.classList.add('hidden');
+      }
+      if (data.favorites.length > 0) {
+        $noResults.classList.add('hidden');
+        $favParks.className = '';
+        renderParkChunks(data.pageNum);
+        $footer.classList.remove('hidden');
+      }
       break;
   }
   if (data.firstLoad) {
@@ -318,7 +321,10 @@ var favToggle = event => {
       return data.favorites.splice(targetIndex, 1);
     }
     targetIndex = data.favorites.indexOf(event.target.closest('.park-high-lvl').getAttribute('id'));
-    return data.favorites.splice(targetIndex, 1);
+    data.favorites.splice(targetIndex, 1);
+    if (data.view === 'Favorites') {
+      viewSwap();
+    }
   }
 };
 
