@@ -1,8 +1,14 @@
 var $navHeader = document.querySelector('.nav-header');
+var $navLinks = document.querySelector('.nav-links');
+var $container = document.querySelector('.container');
 var $pageHeader = document.querySelector('.page-header');
 var $headerFav = document.querySelector('#header-fav');
 var $filterBar = document.querySelector('.filter-bar');
 var $homePage = document.querySelector('#home-page');
+var $favorites = document.querySelector('#Favorites');
+var $noResults = document.querySelector('#no-results');
+var $favParks = document.querySelector('#fav-parks');
+var $findParks = document.querySelector('.find-parks');
 var $indivPark = document.querySelector('#individual-park');
 var $indivParkImg = document.querySelector('#indiv-park-img');
 var $address = document.querySelector('#address');
@@ -24,31 +30,43 @@ var createApiUrl = obj => {
   var urlStart = 'http://developer.nps.gov/api/v1/parks?';
   var urlEnd = '&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo';
   var apiObj = {
-    stateCode: null,
-    limit: null,
-    start: null,
-    q: null
+    parkCode: '',
+    stateCode: '',
+    limit: '',
+    start: '',
+    q: ''
   };
   var apiParams = '';
-
   for (var key in obj) {
     if (Object.hasOwn(apiObj, key) === false) {
       return;
     }
-    apiObj[key] = obj[key];
-  }
-
-  for (var param in apiObj) {
-    if (apiObj[param] !== null) {
-      apiParams += `&${param + '=' + JSON.stringify(apiObj[param])}`;
+    if (typeof obj[key] === 'object') {
+      obj[key].sort((a, b) => {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+        return 0;
+      });
+      apiObj[key] = obj[key].join(',');
+    } else {
+      apiObj[key] = obj[key];
     }
   }
 
+  for (var param in apiObj) {
+    if (apiObj[param] !== '') {
+      apiParams += `&${param + '=' + apiObj[param]}`;
+    }
+  }
   return corsPrefix + encodeURIComponent(urlStart + apiParams + urlEnd);
 };
 
 // Define a function to create a high level overview of each park
-var renderParkHighLvl = entry => {
+var renderParkHighLvl = (view, entry) => {
   // Create elements
   var $parkDiv = document.createElement('div');
   var $imgDiv = document.createElement('div');
@@ -69,7 +87,6 @@ var renderParkHighLvl = entry => {
   $detailsDiv.className = 'details-high-lvl col-three-fifths';
   $titleDiv.className = 'details-high-lvl-header';
   $title.className = 'high-lvl-title';
-  $favIcon.className = 'fa-regular fa-star';
   $descDiv.className = 'high-lvl-desc';
   $buttonDiv.className = 'align-right';
   $button.className = 'more-info';
@@ -77,11 +94,15 @@ var renderParkHighLvl = entry => {
   $button.textContent = 'More Info';
 
   // Assign nonstandard attributes and content
-  $parkDiv.setAttribute('id', entry.id);
+  $parkDiv.setAttribute('id', entry.parkCode);
   $img.setAttribute('src', entry.images[0].url);
   $img.setAttribute('alt', entry.images[0].altText);
   $title.textContent = entry.fullName;
   $desc.textContent = entry.description;
+  $favIcon.className = 'fa-regular fa-star';
+  if (data.favorites.includes(entry.parkCode)) {
+    $favIcon.className = 'fa-solid fa-star';
+  }
 
   // Append elements
   $buttonDiv.appendChild($button);
@@ -94,50 +115,75 @@ var renderParkHighLvl = entry => {
   $imgDiv.appendChild($img);
   $parkDiv.appendChild($imgDiv);
   $parkDiv.appendChild($detailsDiv);
-  $homePage.appendChild($parkDiv);
-};
 
-// Define an XHR request meant for pagination
-var xhrPages = new XMLHttpRequest();
-xhrPages.open('GET', createApiUrl({ limit: 500 }));
-xhrPages.responseType = 'json';
+  if (view === 'home-page') {
+    $homePage.appendChild($parkDiv);
+  } else if (view === 'Favorites') {
+    $favParks.appendChild($parkDiv);
+  }
+
+};
 
 // Define a function to render page numbers based on total parks
 var renderPageNums = view => {
-  $footerPages.innerHTML = '';
-  var totalPages = 0;
-  if (view === 'home-page') {
-    totalPages = Math.ceil(xhrPages.response.total / 10);
-  }
-  for (var i = 1; i <= totalPages; i++) {
-    var $addtPage = document.createElement('option');
-    $addtPage.setAttribute('value', i);
-    $addtPage.textContent = i;
-    $footerPages.appendChild($addtPage);
-  }
-  $pageSpan.textContent = ' ' + totalPages;
-  $footerPages.value = data.pageNum;
+  var xhrPages = new XMLHttpRequest();
+  xhrPages.open('GET', createApiUrl({ limit: 500 }));
+  xhrPages.responseType = 'json';
+  xhrPages.addEventListener('load', () => {
+    $footerPages.innerHTML = '';
+    var totalPages = 0;
+    if (data.view === 'home-page') {
+      totalPages = Math.ceil(xhrPages.response.total / 10);
+    }
+    if (data.view === 'Favorites') {
+      if (data.favorites.length >= 10) {
+        totalPages = Math.ceil(data.favorites.length / 10);
+      } else if (!data.favorites.length) {
+        $footer.classList.add('hidden');
+      } else {
+        totalPages = 1;
+      }
+    }
+    for (var i = 1; i <= totalPages; i++) {
+      var $addtPage = document.createElement('option');
+      $addtPage.setAttribute('value', i);
+      $addtPage.textContent = i;
+      $footerPages.appendChild($addtPage);
+    }
+    $pageSpan.textContent = ' ' + totalPages;
+    $footerPages.value = data.pageNum;
+  });
+
+  xhrPages.send();
 };
 
 // Define a function to render park segments based on page number
 var renderParkChunks = pageNum => {
   var xhrParkChunks = new XMLHttpRequest();
   $homePage.innerHTML = '';
-  if (pageNum === 1) {
-    xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: 0 }));
-  } else {
-    xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: (pageNum * 10) + 1 }));
+
+  $favParks.innerHTML = '';
+  if (data.view === 'home-page') {
+    if (pageNum === 1) {
+      xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: 0 }));
+    } else {
+      xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: (pageNum * 10) + 1 }));
+    }
+  } else if (data.view === 'Favorites') {
+    if (pageNum === 1) {
+      xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: 0 }));
+    } else {
+      xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: (pageNum * 10) + 1 }));
+    }
   }
   xhrParkChunks.responseType = 'json';
   xhrParkChunks.addEventListener('load', () => {
     for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
-      renderParkHighLvl(xhrParkChunks.response.data[i]);
+      renderParkHighLvl(data.view, xhrParkChunks.response.data[i]);
     }
   });
   xhrParkChunks.send();
 };
-
-renderParkChunks(data.pageNum);
 
 // Define a function to load the individual park view with corresponding data
 var loadIndivPark = () => {
@@ -196,6 +242,11 @@ Email: ${parkContacts.emailAddresses[0].emailAddress}`;
 
 // Define a view-swapping function
 var viewSwap = () => {
+  renderPageNums(data.view);
+  if (data.firstLoad && !data.reloaded) {
+    data.pageNum = 1;
+    data.view = 'home-page';
+  }
   switch (data.view) {
     case 'home-page':
       $pageForm.reset();
@@ -203,6 +254,7 @@ var viewSwap = () => {
       $indivPark.classList.add('hidden');
       $homePage.classList.remove('hidden');
       $filterBar.classList.remove('hidden');
+      $favorites.classList.add('hidden');
       $footer.classList.remove('hidden');
       $pageHeader.textContent = 'National Parks';
       $headerFav.classList.add('hidden');
@@ -211,27 +263,64 @@ var viewSwap = () => {
       data.pageNum = 1;
       $indivPark.classList.remove('hidden');
       $homePage.classList.add('hidden');
+      $favorites.classList.add('hidden');
       $filterBar.classList.add('hidden');
       $footer.classList.add('hidden');
-      $headerFav.classList.remove('hidden');
+      $headerFav.className = 'fa-regular fa-star';
+      if (data.favorites.includes(data.targetPark)) {
+        $headerFav.className = 'fa-solid fa-star';
+      }
       loadIndivPark();
       $topics.scrollTo(0, 0);
       $activities.scrollTo(0, 0);
       break;
+    case 'Favorites':
+      $pageForm.reset();
+      data.pageNum = 1;
+      if (data.favorites.length < 1) {
+        $noResults.classList.remove('hidden');
+      }
+      if (data.favorites.length > 0) {
+        $noResults.classList.add('hidden');
+        renderParkChunks(data.pageNum);
+      }
+      $homePage.classList.add('hidden');
+      $indivPark.classList.add('hidden');
+      $favorites.classList.remove('hidden');
+      $filterBar.classList.remove('hidden');
+      $footer.classList.remove('hidden');
+      $pageHeader.textContent = 'Favorites';
+      $headerFav.classList.add('hidden');
+      break;
+  }
+  if (data.firstLoad) {
+    data.firstLoad = false;
   }
   window.scrollTo(0, 0);
 };
 
+// Define a function to favorite/unfavorite parks
+var favToggle = event => {
+  if (event.target.matches('.fa-regular')) {
+    event.target.className = 'fa-solid fa-star';
+    if (data.view === 'individual-park') {
+      return data.favorites.push(data.targetPark);
+    }
+    return data.favorites.push(event.target.closest('.park-high-lvl').getAttribute('id'));
+  }
+};
+
 // Event listeners
-xhrPages.addEventListener('load', () => {
-  renderPageNums(data.view);
-});
-xhrPages.send();
 
 $pageForm.addEventListener('input', () => {
   data.pageNum = $pageForm.elements['page-num'].value;
   $homePage.innerHTML = '';
   renderParkChunks(data.pageNum);
+});
+
+$navLinks.addEventListener('click', event => {
+  data.view = event.target.textContent;
+  viewSwap();
 });
 
 $navHeader.addEventListener('click', () => {
@@ -241,12 +330,23 @@ $navHeader.addEventListener('click', () => {
   viewSwap();
 });
 
-$homePage.addEventListener('click', event => {
+$container.addEventListener('click', event => {
   if (event.target.className === 'more-info') {
     data.targetPark = event.target.closest('.park-high-lvl').getAttribute('id');
     data.view = 'individual-park';
     viewSwap();
   }
+  if (event.target.matches('.fa-star')) {
+    favToggle(event);
+  }
 });
 
-document.addEventListener('DOMContentLoaded', viewSwap());
+$findParks.addEventListener('click', () => {
+  data.view = 'home-page';
+  viewSwap();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  data.firstLoad = true;
+  viewSwap();
+});

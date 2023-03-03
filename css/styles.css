@@ -8,6 +8,7 @@ body {
 .page-header,
 .high-lvl-title,
 .more-info,
+.find-parks,
 .filter-bar,
 .general-header,
 .subheading {
@@ -19,7 +20,8 @@ body {
 a,
 button,
 i,
-select {
+select,
+.nav-links {
   cursor: pointer;
 }
 
@@ -88,10 +90,19 @@ img {
 }
 
 .more-info,
+.find-parks,
 a {
   background-color: #dda15e;
   color: #fefae0;
   padding: 0.25rem 0.75rem;
+}
+
+#no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fefae0;
+  padding: 1.5rem;
 }
 
 .page-num {
@@ -100,6 +111,11 @@ a {
   font-weight: 400;
   text-align: center;
   margin: 1rem auto;
+}
+
+.find-parks {
+  margin: 1.5rem;
+  font-size: 1.25rem;
 }
 
 #page-num {
