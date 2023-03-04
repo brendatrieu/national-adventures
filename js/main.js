@@ -475,8 +475,14 @@ $filterForm.addEventListener('click', event => {
   if (event.target.matches('.filter-field')) {
     if (!event.target.nextElementSibling.className) {
       event.target.nextElementSibling.className = 'hidden';
+      event.target.style.backgroundColor = 'white';
+      event.target.style.borderBottom = '1px solid #dda15e';
+      event.target.style.borderRadius = '0.3rem';
     } else {
       event.target.nextElementSibling.className = '';
+      event.target.style.borderBottom = 'none';
+      event.target.style.borderRadius = '0.3rem 0.3rem 0 0';
+      event.target.style.backgroundColor = '#fcf6ed';
     }
   }
 });

@@ -53,6 +53,10 @@ nav {
   margin: 0.75rem 0;
 }
 
+#filter-form .subheading {
+  margin-top: 0;
+}
+
 .filter-bar {
   font-size: 1.25rem;
 }
@@ -79,6 +83,7 @@ nav {
 
 #filter-form {
   flex-wrap: wrap;
+  padding: 0.5rem 0.25rem;
 }
 
 .filter-field,
@@ -91,11 +96,14 @@ fieldset {
 
 .filter-field {
   color: gray;
+  margin: 0;
 }
 
 fieldset {
+  border-top: none;
+  border-radius: 0 0 0.3rem 0.3rem;
   margin: 0;
-  padding: 0.2rem;
+  padding: 0 0.2rem;
   height: 5rem;
   overflow-y: scroll;
   display: flex;
@@ -104,6 +112,7 @@ fieldset {
 
 .align-top {
   align-self: flex-start;
+  margin-bottom: 0.5rem;
 }
 
 #state-components {
@@ -119,7 +128,6 @@ fieldset {
 }
 
 #filter-search {
-  margin: 0.5rem;
   align-self: flex-end;
   width: 30%;
 }
