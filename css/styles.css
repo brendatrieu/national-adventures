@@ -81,10 +81,6 @@ nav {
   flex-wrap: wrap;
 }
 
-#filter-form .subheading {
-  margin: 0;
-}
-
 .filter-field,
 fieldset {
   border: 1px solid #dda15e;
@@ -100,10 +96,14 @@ fieldset {
 fieldset {
   margin: 0;
   padding: 0.2rem;
-  height: 1.5rem;
+  height: 5rem;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
+}
+
+.align-top {
+  align-self: flex-start;
 }
 
 #state-components {
@@ -119,8 +119,8 @@ fieldset {
 }
 
 #filter-search {
-  align-self: flex-end;
   margin: 0.5rem;
+  align-self: flex-end;
   width: 30%;
 }
 

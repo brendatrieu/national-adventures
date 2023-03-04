@@ -33,21 +33,21 @@
         <i id="header-fav" class="hidden fa-regular fa-star"></i>
       </div>
       <button class="filter-bar col-two-fifths" type="button"><span>Filter</span><i class="fa-solid fa-filter"></i></button>
-      <div class="col-full" id="filter-modal">
+      <div class="col-full hidden" id="filter-modal">
         <form method="get" id="filter-form">
-          <div id="state-components">
+          <div class="align-top" id="state-components">
             <h4 class="subheading">States</h4>
             <button class="filter-field" id="state-dropdown" type="button"><span>Select</span><i
                 class="fa-solid fa-caret-down"></i></button>
-            <fieldset class="" id="state-options">
+            <fieldset class="hidden" id="state-options">
 
             </fieldset>
           </div>
-          <div id="activity-components">
+          <div class="align-top" id="activity-components">
             <h4 class="subheading">Activities</h4>
             <button class="filter-field" id="activity-dropdown" type="button"><span>Select</span><i
                 class="fa-solid fa-caret-down"></i></button>
-            <fieldset class="" id="activity-options">
+            <fieldset class="hidden" id="activity-options">
 
             </fieldset>
           </div>
@@ -59,7 +59,7 @@
 
             </fieldset>
           </div>
-          <button type="submit" id="filter-search">Search</button>
+          <button class="" type="submit" id="filter-search">Search</button>
         </form>
       </div>
     </header>

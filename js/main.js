@@ -4,6 +4,7 @@ var $container = document.querySelector('.container');
 var $pageHeader = document.querySelector('.page-header');
 var $headerFav = document.querySelector('#header-fav');
 var $filterBar = document.querySelector('.filter-bar');
+var $filterModal = document.querySelector('#filter-modal');
 var $stateOptions = document.querySelector('#state-options');
 var $activityOptions = document.querySelector('#activity-options');
 var $topicOptions = document.querySelector('#topic-options');
@@ -416,6 +417,16 @@ var filterDropdowns = () => {
 
 filterDropdowns();
 
+// Define a filter modal toggle function
+var toggleFilterBar = () => {
+  if ($filterModal.matches('.hidden')) {
+    $filterModal.classList.remove('hidden');
+    $filterModal.style.height = 'unset';
+  } else {
+    $filterModal.classList.add('hidden');
+  }
+};
+
 // Event listeners
 
 $pageForm.addEventListener('input', () => {
@@ -446,6 +457,8 @@ $container.addEventListener('click', event => {
     favToggle(event);
   }
 });
+
+$filterBar.addEventListener('click', toggleFilterBar);
 
 $findParks.addEventListener('click', () => {
   data.view = 'home-page';
