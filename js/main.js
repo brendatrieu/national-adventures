@@ -5,6 +5,7 @@ var $pageHeader = document.querySelector('.page-header');
 var $headerFav = document.querySelector('#header-fav');
 var $filterBar = document.querySelector('.filter-bar');
 var $filterModal = document.querySelector('#filter-modal');
+var $filterForm = document.querySelector('#filter-form');
 var $stateOptions = document.querySelector('#state-options');
 var $activityOptions = document.querySelector('#activity-options');
 var $topicOptions = document.querySelector('#topic-options');
@@ -468,4 +469,14 @@ $findParks.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
   data.firstLoad = true;
   viewSwap();
+});
+
+$filterForm.addEventListener('click', event => {
+  if (event.target.matches('.filter-field')) {
+    if (!event.target.nextElementSibling.className) {
+      event.target.nextElementSibling.className = 'hidden';
+    } else {
+      event.target.nextElementSibling.className = '';
+    }
+  }
 });
