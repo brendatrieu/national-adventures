@@ -144,19 +144,19 @@ var renderParkChunks = pageNum => {
     if (pageNum === 1) {
       xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: 0 }));
     } else {
-      xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: (pageNum * 10) + 1 }));
+      xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: ((pageNum - 1) * 10) }));
     }
   } else if (data.view === 'Favorites') {
     if (pageNum === 1) {
       xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: 0 }));
     } else {
-      xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: (pageNum * 10) + 1 }));
+      xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: ((pageNum - 1) * 10) }));
     }
   } else if (data.view === 'home-filtered') {
     if (pageNum === 1) {
       xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 10, start: 0 }));
     } else {
-      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 10, start: (pageNum * 10) + 1 }));
+      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 10, start: ((pageNum - 1) * 10) }));
     }
   }
   xhrParkChunks.responseType = 'json';
@@ -164,9 +164,6 @@ var renderParkChunks = pageNum => {
 
     if (data.view === 'home-page' || data.view === 'home-filtered') {
       totalPages = Math.ceil(xhrParkChunks.response.total / 10) - 1;
-      for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
-        renderParkHighLvl(data.view, xhrParkChunks.response.data[i]);
-      }
     }
 
     if (data.view === 'Favorites') {
@@ -177,9 +174,10 @@ var renderParkChunks = pageNum => {
       } else {
         totalPages = 1;
       }
-      for (var f = 0; f < xhrParkChunks.response.data.filter(name => data.favorites.includes(name.parkCode)).length; f++) {
-        renderParkHighLvl(data.view, xhrParkChunks.response.data.filter(name => data.favorites.includes(name.parkCode))[f]);
-      }
+    }
+
+    for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
+      renderParkHighLvl(data.view, xhrParkChunks.response.data[i]);
     }
 
     for (var p = 1; p <= totalPages; p++) {
