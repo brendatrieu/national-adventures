@@ -124,12 +124,11 @@ var renderParkHighLvl = (view, entry) => {
   $parkDiv.appendChild($imgDiv);
   $parkDiv.appendChild($detailsDiv);
 
-  if (view === 'home-page') {
+  if (view === 'home-page' || view === 'home-filtered') {
     $homePage.appendChild($parkDiv);
   } else if (view === 'Favorites') {
     $favParks.appendChild($parkDiv);
   }
-
 };
 
 // Define a function to render page numbers based on total parks
@@ -140,7 +139,7 @@ var renderPageNums = view => {
   xhrPages.addEventListener('load', () => {
     $footerPages.innerHTML = '';
     var totalPages = 0;
-    if (data.view === 'home-page') {
+    if (data.view === 'home-page' || data.view === 'home-filtered') {
       totalPages = Math.ceil(xhrPages.response.total / 10);
     }
     if (data.view === 'Favorites') {
@@ -182,6 +181,12 @@ var renderParkChunks = pageNum => {
       xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: 0 }));
     } else {
       xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: (pageNum * 10) + 1 }));
+    }
+  } else if (data.view === 'home-filtered') {
+    if (pageNum === 1) {
+      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 500, start: 0 }));
+    } else {
+      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 500, start: (pageNum * 10) + 1 }));
     }
   }
   xhrParkChunks.responseType = 'json';
@@ -479,6 +484,11 @@ var filterFormSearch = () => {
   if (!$activityOptions.className) {
     toggleFilterOptions($activityDropdown);
   }
+
+  data.view = 'home-filtered';
+  data.inputs = inputs;
+  renderParkChunks(data.pageNum);
+  renderPageNums(data.view);
 };
 
 /**

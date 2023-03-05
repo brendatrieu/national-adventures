@@ -7,6 +7,7 @@ var data = {
   favorites: [],
   reloaded: false,
   firstLoad: false,
+  inputs: {},
   states: [{ name: 'Alabama', abbreviation: 'AL' },
     { name: 'Alaska', abbreviation: 'AK' },
     { name: 'Arizona', abbreviation: 'AZ' },
