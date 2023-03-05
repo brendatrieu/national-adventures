@@ -162,12 +162,11 @@ var renderParkChunks = pageNum => {
   xhrParkChunks.responseType = 'json';
   xhrParkChunks.addEventListener('load', () => {
 
-    for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
-      renderParkHighLvl(data.view, xhrParkChunks.response.data[i]);
-    }
-
     if (data.view === 'home-page' || data.view === 'home-filtered') {
       totalPages = Math.ceil(xhrParkChunks.response.total / 10) - 1;
+      for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
+        renderParkHighLvl(data.view, xhrParkChunks.response.data[i]);
+      }
     }
 
     if (data.view === 'Favorites') {
@@ -177,6 +176,9 @@ var renderParkChunks = pageNum => {
         $footer.classList.add('hidden');
       } else {
         totalPages = 1;
+      }
+      for (var f = 0; f < xhrParkChunks.response.data.filter(name => data.favorites.includes(name.parkCode)).length; f++) {
+        renderParkHighLvl(data.view, xhrParkChunks.response.data.filter(name => data.favorites.includes(name.parkCode))[f]);
       }
     }
 
@@ -255,8 +257,6 @@ var viewSwap = () => {
     data.pageNum = 1;
     data.view = 'home-page';
   }
-
-  renderParkChunks(data.pageNum);
 
   switch (data.view) {
     case 'home-page':
