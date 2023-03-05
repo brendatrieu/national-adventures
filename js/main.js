@@ -6,6 +6,9 @@ var $headerFav = document.querySelector('#header-fav');
 var $filterBar = document.querySelector('.filter-bar');
 var $filterModal = document.querySelector('#filter-modal');
 var $filterForm = document.querySelector('#filter-form');
+var $stateDropdown = document.querySelector('#state-dropdown');
+var $activityDropdown = document.querySelector('#activity-dropdown');
+var $topicDropdown = document.querySelector('#topic-dropdown');
 var $stateOptions = document.querySelector('#state-options');
 var $activityOptions = document.querySelector('#activity-options');
 var $topicOptions = document.querySelector('#topic-options');
@@ -422,22 +425,68 @@ filterDropdowns();
 var toggleFilterBar = () => {
   if ($filterModal.matches('.hidden')) {
     $filterModal.classList.remove('hidden');
-    $filterModal.style.height = 'unset';
   } else {
     $filterModal.classList.add('hidden');
   }
 };
 
-// Event listeners
+var toggleFilterOptions = option => {
+  if (!option.nextElementSibling.className) {
+    option.nextElementSibling.className = 'hidden';
+    option.style.backgroundColor = 'white';
+    option.style.borderBottom = '1px solid #dda15e';
+    option.style.borderRadius = '0.3rem';
+  } else {
+    option.nextElementSibling.className = '';
+    option.style.borderBottom = 'none';
+    option.style.borderRadius = '0.3rem 0.3rem 0 0';
+    option.style.backgroundColor = '#fcf6ed';
+  }
+};
 
-$pageForm.addEventListener('input', () => {
-  data.pageNum = $pageForm.elements['page-num'].value;
-  $homePage.innerHTML = '';
-  renderParkChunks(data.pageNum);
-});
+var filterFormSearch = () => {
+  toggleFilterBar();
+  event.preventDefault();
+  var inputs = {
+    stateCode: [],
+    topic: [],
+    activity: []
+  };
 
-$navLinks.addEventListener('click', event => {
-  data.view = event.target.textContent;
+  for (var e = 0; e < $filterForm.elements.length; e++) {
+    if ($filterForm.elements[e].tagName === 'INPUT' && $filterForm.elements[e].checked) {
+      switch ($filterForm.elements[e].name) {
+        case 'state':
+          inputs.stateCode.push($filterForm.elements[e].value);
+          break;
+        case 'topic':
+          inputs.topic.push($filterForm.elements[e].value);
+          break;
+        case 'activity':
+          inputs.activity.push($filterForm.elements[e].value);
+          break;
+      }
+    }
+  }
+
+  $filterForm.reset();
+  if (!$stateOptions.className) {
+    toggleFilterOptions($stateDropdown);
+  }
+  if (!$topicOptions.className) {
+    toggleFilterOptions($topicDropdown);
+  }
+  if (!$activityOptions.className) {
+    toggleFilterOptions($activityDropdown);
+  }
+};
+
+/**
+ * Event listeners
+ * */
+
+document.addEventListener('DOMContentLoaded', () => {
+  data.firstLoad = true;
   viewSwap();
 });
 
@@ -445,6 +494,11 @@ $navHeader.addEventListener('click', () => {
   data.view = 'home-page';
   data.pageNum = 1;
   renderPageNums(data.view);
+  viewSwap();
+});
+
+$navLinks.addEventListener('click', event => {
+  data.view = event.target.textContent;
   viewSwap();
 });
 
@@ -461,28 +515,21 @@ $container.addEventListener('click', event => {
 
 $filterBar.addEventListener('click', toggleFilterBar);
 
+$filterForm.addEventListener('click', event => {
+  if (event.target.matches('.filter-field')) {
+    toggleFilterOptions(event.target);
+  }
+});
+
+$filterForm.addEventListener('submit', filterFormSearch);
+
 $findParks.addEventListener('click', () => {
   data.view = 'home-page';
   viewSwap();
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  data.firstLoad = true;
-  viewSwap();
-});
-
-$filterForm.addEventListener('click', event => {
-  if (event.target.matches('.filter-field')) {
-    if (!event.target.nextElementSibling.className) {
-      event.target.nextElementSibling.className = 'hidden';
-      event.target.style.backgroundColor = 'white';
-      event.target.style.borderBottom = '1px solid #dda15e';
-      event.target.style.borderRadius = '0.3rem';
-    } else {
-      event.target.nextElementSibling.className = '';
-      event.target.style.borderBottom = 'none';
-      event.target.style.borderRadius = '0.3rem 0.3rem 0 0';
-      event.target.style.backgroundColor = '#fcf6ed';
-    }
-  }
+$pageForm.addEventListener('input', () => {
+  data.pageNum = $pageForm.elements['page-num'].value;
+  $homePage.innerHTML = '';
+  renderParkChunks(data.pageNum);
 });

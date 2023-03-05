@@ -35,31 +35,35 @@
       <button class="filter-bar col-two-fifths" type="button"><span>Filter</span><i class="fa-solid fa-filter"></i></button>
       <div class="col-full hidden" id="filter-modal">
         <form method="get" id="filter-form">
-          <div class="align-top" id="state-components">
-            <h4 class="subheading">States</h4>
-            <button class="filter-field" id="state-dropdown" type="button"><span>Select</span><i
-                class="fa-solid fa-caret-down"></i></button>
-            <fieldset class="hidden" id="state-options">
+          <div class="col-half flex">
+            <div class="align-top" id="state-components">
+              <h4 class="subheading">States</h4>
+              <button class="filter-field" id="state-dropdown" type="button"><span>Select</span><i
+                  class="fa-solid fa-caret-down"></i></button>
+              <fieldset class="hidden" id="state-options">
 
-            </fieldset>
-          </div>
-          <div class="align-top" id="activity-components">
-            <h4 class="subheading">Activities</h4>
-            <button class="filter-field" id="activity-dropdown" type="button"><span>Select</span><i
-                class="fa-solid fa-caret-down"></i></button>
-            <fieldset class="hidden" id="activity-options">
+              </fieldset>
+            </div>
+            <div class="align-top" id="activity-components">
+              <h4 class="subheading">Activities</h4>
+              <button class="filter-field" id="activity-dropdown" type="button"><span>Select</span><i
+                  class="fa-solid fa-caret-down"></i></button>
+              <fieldset class="hidden" id="activity-options">
 
-            </fieldset>
+              </fieldset>
+            </div>
           </div>
-          <div id="topic-components">
-            <h4 class="subheading">Topic</h4>
-            <button class="filter-field" id="topic-dropdown" type="button"><span>Select</span><i
-                class="fa-solid fa-caret-down"></i></button>
-            <fieldset class="hidden" id="topic-options">
+          <div class="col-half flex">
+            <div class="align-top" id="topic-components">
+              <h4 class="subheading">Topic</h4>
+              <button class="filter-field" id="topic-dropdown" type="button"><span>Select</span><i
+                  class="fa-solid fa-caret-down"></i></button>
+              <fieldset class="hidden" id="topic-options">
 
-            </fieldset>
+              </fieldset>
+            </div>
+            <button class="" type="submit" id="filter-search">Search</button>
           </div>
-          <button class="" type="submit" id="filter-search">Search</button>
         </form>
       </div>
     </header>
