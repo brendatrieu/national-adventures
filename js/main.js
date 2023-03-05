@@ -70,6 +70,7 @@ var createApiUrl = obj => {
       apiParams += `&${param + '=' + apiObj[param]}`;
     }
   }
+
   return corsPrefix + encodeURIComponent(urlStart + apiParams + urlEnd);
 };
 
@@ -131,44 +132,13 @@ var renderParkHighLvl = (view, entry) => {
   }
 };
 
-// Define a function to render page numbers based on total parks
-var renderPageNums = view => {
-  var xhrPages = new XMLHttpRequest();
-  xhrPages.open('GET', createApiUrl({ limit: 500 }));
-  xhrPages.responseType = 'json';
-  xhrPages.addEventListener('load', () => {
-    $footerPages.innerHTML = '';
-    var totalPages = 0;
-    if (data.view === 'home-page' || data.view === 'home-filtered') {
-      totalPages = Math.ceil(xhrPages.response.total / 10);
-    }
-    if (data.view === 'Favorites') {
-      if (data.favorites.length >= 10) {
-        totalPages = Math.ceil(data.favorites.length / 10);
-      } else if (!data.favorites.length) {
-        $footer.classList.add('hidden');
-      } else {
-        totalPages = 1;
-      }
-    }
-    for (var i = 1; i <= totalPages; i++) {
-      var $addtPage = document.createElement('option');
-      $addtPage.setAttribute('value', i);
-      $addtPage.textContent = i;
-      $footerPages.appendChild($addtPage);
-    }
-    $pageSpan.textContent = ' ' + totalPages;
-    $footerPages.value = data.pageNum;
-  });
-
-  xhrPages.send();
-};
-
 // Define a function to render park segments based on page number
 var renderParkChunks = pageNum => {
   var xhrParkChunks = new XMLHttpRequest();
+  var totalPages = 0;
   $homePage.innerHTML = '';
   $favParks.innerHTML = '';
+  $footerPages.innerHTML = '';
 
   if (data.view === 'home-page') {
     if (pageNum === 1) {
@@ -184,17 +154,43 @@ var renderParkChunks = pageNum => {
     }
   } else if (data.view === 'home-filtered') {
     if (pageNum === 1) {
-      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 500, start: 0 }));
+      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 10, start: 0 }));
     } else {
-      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 500, start: (pageNum * 10) + 1 }));
+      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 10, start: (pageNum * 10) + 1 }));
     }
   }
   xhrParkChunks.responseType = 'json';
   xhrParkChunks.addEventListener('load', () => {
+
     for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
       renderParkHighLvl(data.view, xhrParkChunks.response.data[i]);
     }
+
+    if (data.view === 'home-page' || data.view === 'home-filtered') {
+      totalPages = Math.ceil(xhrParkChunks.response.total / 10) - 1;
+    }
+
+    if (data.view === 'Favorites') {
+      if (data.favorites.length >= 10) {
+        totalPages = Math.ceil(data.favorites.length / 10);
+      } else if (!data.favorites.length) {
+        $footer.classList.add('hidden');
+      } else {
+        totalPages = 1;
+      }
+    }
+
+    for (var p = 1; p <= totalPages; p++) {
+      var $addtPage = document.createElement('option');
+      $addtPage.setAttribute('value', p);
+      $addtPage.textContent = p;
+      $footerPages.appendChild($addtPage);
+    }
+
+    $pageSpan.textContent = ' ' + totalPages;
+    $footerPages.value = data.pageNum;
   });
+
   xhrParkChunks.send();
 };
 
@@ -255,11 +251,13 @@ Email: ${parkContacts.emailAddresses[0].emailAddress}`;
 
 // Define a view-swapping function
 var viewSwap = () => {
-  renderPageNums(data.view);
   if (data.firstLoad && !data.reloaded) {
     data.pageNum = 1;
     data.view = 'home-page';
   }
+
+  renderParkChunks(data.pageNum);
+
   switch (data.view) {
     case 'home-page':
       $pageForm.reset();
@@ -487,8 +485,8 @@ var filterFormSearch = () => {
 
   data.view = 'home-filtered';
   data.inputs = inputs;
+
   renderParkChunks(data.pageNum);
-  renderPageNums(data.view);
 };
 
 /**
@@ -503,7 +501,6 @@ document.addEventListener('DOMContentLoaded', () => {
 $navHeader.addEventListener('click', () => {
   data.view = 'home-page';
   data.pageNum = 1;
-  renderPageNums(data.view);
   viewSwap();
 });
 
