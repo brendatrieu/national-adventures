@@ -154,19 +154,37 @@ var renderParkChunks = pageNum => {
     }
   } else if (data.view === 'home-filtered') {
     if (pageNum === 1) {
-      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 10, start: 0 }));
+      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 500, start: 0 }));
     } else {
-      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 10, start: ((pageNum - 1) * 10) }));
+      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 500, start: ((pageNum - 1) * 10) }));
     }
   }
   xhrParkChunks.responseType = 'json';
+
   xhrParkChunks.addEventListener('load', () => {
+    var response = xhrParkChunks.response;
 
-    if (data.view === 'home-page' || data.view === 'home-filtered') {
-      totalPages = Math.ceil(xhrParkChunks.response.total / 10) - 1;
-    }
+    // Determine total pages
+    if (data.view === 'home-page') {
+      totalPages = Math.ceil(response.total / 10);
+    } else if (data.view === 'home-filtered') {
+      if (data.inputs.filterStatus === true) {
+        for (var p = 0; p < response.data.length; p++) {
+          var combinedData = [...response.data[p].activities, ...response.data[p].topics];
+          var match = 0;
+          for (var t = 0; t < combinedData.length; t++) {
+            if (data.inputs.topics.indexOf(combinedData[t].name) !== -1) {
+              match++;
+            }
+          }
+          if (match === data.inputs.topics.length) {
+            data.inputs.filteredTopics.push(response.data[p]);
+          }
+        }
+      }
 
-    if (data.view === 'Favorites') {
+      totalPages = Math.ceil(data.inputs.filteredTopics.length / 10);
+    } else if (data.view === 'Favorites') {
       if (data.favorites.length >= 10) {
         totalPages = Math.ceil(data.favorites.length / 10);
       } else if (!data.favorites.length) {
@@ -176,14 +194,35 @@ var renderParkChunks = pageNum => {
       }
     }
 
-    for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
-      renderParkHighLvl(data.view, xhrParkChunks.response.data[i]);
+    // Display parks based on page number/total
+    if (data.view === 'home-filtered') {
+      var start = 0;
+      var end = data.inputs.filteredTopics.length;
+      if (data.inputs.filteredTopics.length > 10) {
+        start = (pageNum - 1) * 10;
+        if (pageNum < totalPages) {
+          end = start + 10;
+        }
+      }
+
+      // debugger;
+      for (start; start < end; start++) {
+        renderParkHighLvl(data.view, data.inputs.filteredTopics[start]);
+      }
+
+    } else {
+      for (var i = 0; i < response.data.length; i++) {
+        renderParkHighLvl(data.view, response.data[i]);
+      }
     }
 
-    for (var p = 1; p <= totalPages; p++) {
+    data.inputs.filterStatus = false;
+
+    // Create footer page form options
+    for (var tp = 1; tp <= totalPages; tp++) {
       var $addtPage = document.createElement('option');
-      $addtPage.setAttribute('value', p);
-      $addtPage.textContent = p;
+      $addtPage.setAttribute('value', tp);
+      $addtPage.textContent = tp;
       $footerPages.appendChild($addtPage);
     }
 
@@ -258,6 +297,7 @@ var viewSwap = () => {
 
   switch (data.view) {
     case 'home-page':
+    case 'home-filtered':
       $pageForm.reset();
       renderParkChunks(data.pageNum);
       $indivPark.classList.add('hidden');
@@ -285,7 +325,7 @@ var viewSwap = () => {
       break;
     case 'Favorites':
       $pageForm.reset();
-      data.pageNum = 1;
+      // data.pageNum = 1;
       $homePage.classList.add('hidden');
       $indivPark.classList.add('hidden');
       $favorites.classList.remove('hidden');
@@ -450,8 +490,9 @@ var filterFormSearch = () => {
   event.preventDefault();
   var inputs = {
     stateCode: [],
-    topic: [],
-    activity: []
+    topics: [],
+    filteredTopics: [],
+    filterStatus: true
   };
 
   for (var e = 0; e < $filterForm.elements.length; e++) {
@@ -461,10 +502,8 @@ var filterFormSearch = () => {
           inputs.stateCode.push($filterForm.elements[e].value);
           break;
         case 'topic':
-          inputs.topic.push($filterForm.elements[e].value);
-          break;
         case 'activity':
-          inputs.activity.push($filterForm.elements[e].value);
+          inputs.topics.push($filterForm.elements[e].value);
           break;
       }
     }
@@ -483,6 +522,7 @@ var filterFormSearch = () => {
 
   data.view = 'home-filtered';
   data.inputs = inputs;
+  data.pageNum = 1;
 
   renderParkChunks(data.pageNum);
 };
