@@ -127,10 +127,14 @@ fieldset {
   width: 55%;
 }
 
+.search-button {
+  margin: 2.15rem 0 0.5rem;
+  width: 35%;
+}
+
 #filter-search {
   align-self: flex-end;
-  margin-bottom: 0.5rem;
-  width: 35%;
+  width: 100%;
 }
 
 button,
