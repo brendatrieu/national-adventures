@@ -132,6 +132,29 @@ var renderParkHighLvl = (view, entry) => {
   }
 };
 
+var filterData = response => {
+  var match = 0;
+  if (data.view === 'home-filtered') {
+    for (var p = 0; p < response.data.length; p++) {
+      var combinedData = [...response.data[p].activities, ...response.data[p].topics];
+      for (var t = 0; t < combinedData.length; t++) {
+        if (data.inputs.topics.indexOf(combinedData[t].name) !== -1) {
+          match++;
+        }
+      }
+      if (match === data.inputs.topics.length) {
+        data.inputs.filteredTopics.push(response.data[p]);
+      }
+    }
+  }
+  // else if (data.view === 'favorites-filtered') {
+  //   for (var f = 0; f < data.favorites.length; f++) {
+
+  //   }
+  // }
+
+};
+
 // Define a function to render park segments based on page number
 var renderParkChunks = pageNum => {
   var xhrParkChunks = new XMLHttpRequest();
@@ -141,24 +164,15 @@ var renderParkChunks = pageNum => {
   $footerPages.innerHTML = '';
 
   if (data.view === 'home-page') {
-    if (pageNum === 1) {
-      xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: 0 }));
-    } else {
-      xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: ((pageNum - 1) * 10) }));
-    }
-  } else if (data.view === 'Favorites') {
-    if (pageNum === 1) {
-      xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: 0 }));
-    } else {
-      xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: ((pageNum - 1) * 10) }));
-    }
+    xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: ((pageNum - 1) * 10) }));
   } else if (data.view === 'home-filtered') {
-    if (pageNum === 1) {
-      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 500, start: 0 }));
-    } else {
-      xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 500, start: ((pageNum - 1) * 10) }));
-    }
+    xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 500, start: ((pageNum - 1) * 10) }));
+  } else if (data.view === 'Favorites') {
+    xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: ((pageNum - 1) * 10) }));
+  } else if (data.view === 'favorites-filtered') {
+    xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: ((pageNum - 1) * 10) }));
   }
+
   xhrParkChunks.responseType = 'json';
 
   xhrParkChunks.addEventListener('load', () => {
@@ -167,22 +181,8 @@ var renderParkChunks = pageNum => {
     // Determine total pages
     if (data.view === 'home-page') {
       totalPages = Math.ceil(response.total / 10);
-    } else if (data.view === 'home-filtered') {
-      if (data.inputs.filterStatus === true) {
-        for (var p = 0; p < response.data.length; p++) {
-          var combinedData = [...response.data[p].activities, ...response.data[p].topics];
-          var match = 0;
-          for (var t = 0; t < combinedData.length; t++) {
-            if (data.inputs.topics.indexOf(combinedData[t].name) !== -1) {
-              match++;
-            }
-          }
-          if (match === data.inputs.topics.length) {
-            data.inputs.filteredTopics.push(response.data[p]);
-          }
-        }
-      }
-
+    } else if (data.inputs.filterStatus === true) {
+      filterData(response);
       totalPages = Math.ceil(data.inputs.filteredTopics.length / 10);
     } else if (data.view === 'Favorites') {
       if (data.favorites.length >= 10) {
@@ -303,6 +303,7 @@ var viewSwap = () => {
       $indivPark.classList.add('hidden');
       $homePage.classList.remove('hidden');
       $filterBar.classList.remove('hidden');
+      $filterModal.classList.add('hidden');
       $favorites.classList.add('hidden');
       $footer.classList.remove('hidden');
       $pageHeader.textContent = 'National Parks';
@@ -314,6 +315,7 @@ var viewSwap = () => {
       $homePage.classList.add('hidden');
       $favorites.classList.add('hidden');
       $filterBar.classList.add('hidden');
+      $filterModal.classList.add('hidden');
       $footer.classList.add('hidden');
       $headerFav.className = 'fa-regular fa-star';
       if (data.favorites.includes(data.targetPark)) {
@@ -324,12 +326,14 @@ var viewSwap = () => {
       $activities.scrollTo(0, 0);
       break;
     case 'Favorites':
+    case 'favorites-filtered':
       $pageForm.reset();
       // data.pageNum = 1;
       $homePage.classList.add('hidden');
       $indivPark.classList.add('hidden');
       $favorites.classList.remove('hidden');
       $filterBar.classList.remove('hidden');
+      $filterModal.classList.add('hidden');
       $pageHeader.textContent = 'Favorites';
       $headerFav.classList.add('hidden');
       if (data.favorites.length < 1) {
@@ -519,8 +523,11 @@ var filterFormSearch = () => {
   if (!$activityOptions.className) {
     toggleFilterOptions($activityDropdown);
   }
-
-  data.view = 'home-filtered';
+  if (data.view === 'home-page') {
+    data.view = 'home-filtered';
+  } else if (data.view === 'Favorites') {
+    data.view = 'favorites-filtered';
+  }
   data.inputs = inputs;
   data.pageNum = 1;
 
