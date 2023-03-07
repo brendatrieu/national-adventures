@@ -127,32 +127,24 @@ var renderParkHighLvl = (view, entry) => {
 
   if (view === 'home-page' || view === 'home-filtered') {
     $homePage.appendChild($parkDiv);
-  } else if (view === 'Favorites') {
+  } else if (view === 'Favorites' || view === 'favorites-filtered') {
     $favParks.appendChild($parkDiv);
   }
 };
 
 var filterData = response => {
-  var match = 0;
-  if (data.view === 'home-filtered') {
-    for (var p = 0; p < response.data.length; p++) {
-      var combinedData = [...response.data[p].activities, ...response.data[p].topics];
-      for (var t = 0; t < combinedData.length; t++) {
-        if (data.inputs.topics.indexOf(combinedData[t].name) !== -1) {
-          match++;
-        }
-      }
-      if (match === data.inputs.topics.length) {
-        data.inputs.filteredTopics.push(response.data[p]);
+  for (var p = 0; p < response.data.length; p++) {
+    var match = 0;
+    var combinedData = [...response.data[p].activities, ...response.data[p].topics];
+    for (var t = 0; t < combinedData.length; t++) {
+      if (data.inputs.topics.indexOf(combinedData[t].name) !== -1) {
+        match++;
       }
     }
+    if (match === data.inputs.topics.length) {
+      data.inputs.filteredTopics.push(response.data[p]);
+    }
   }
-  // else if (data.view === 'favorites-filtered') {
-  //   for (var f = 0; f < data.favorites.length; f++) {
-
-  //   }
-  // }
-
 };
 
 // Define a function to render park segments based on page number
@@ -170,7 +162,7 @@ var renderParkChunks = pageNum => {
   } else if (data.view === 'Favorites') {
     xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: ((pageNum - 1) * 10) }));
   } else if (data.view === 'favorites-filtered') {
-    xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: ((pageNum - 1) * 10) }));
+    xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, parkCode: data.favorites, limit: 10, start: ((pageNum - 1) * 10) }));
   }
 
   xhrParkChunks.responseType = 'json';
@@ -179,11 +171,11 @@ var renderParkChunks = pageNum => {
     var response = xhrParkChunks.response;
 
     // Determine total pages
-    if (data.view === 'home-page') {
-      totalPages = Math.ceil(response.total / 10);
-    } else if (data.inputs.filterStatus === true) {
+    if (data.inputs.filterStatus === true) {
       filterData(response);
       totalPages = Math.ceil(data.inputs.filteredTopics.length / 10);
+    } else if (data.view === 'home-page') {
+      totalPages = Math.ceil(response.total / 10);
     } else if (data.view === 'Favorites') {
       if (data.favorites.length >= 10) {
         totalPages = Math.ceil(data.favorites.length / 10);
@@ -195,7 +187,7 @@ var renderParkChunks = pageNum => {
     }
 
     // Display parks based on page number/total
-    if (data.view === 'home-filtered') {
+    if (data.view === 'home-filtered' || data.view === 'favorites-filtered') {
       var start = 0;
       var end = data.inputs.filteredTopics.length;
       if (data.inputs.filteredTopics.length > 10) {
@@ -204,19 +196,14 @@ var renderParkChunks = pageNum => {
           end = start + 10;
         }
       }
-
-      // debugger;
       for (start; start < end; start++) {
         renderParkHighLvl(data.view, data.inputs.filteredTopics[start]);
       }
-
     } else {
       for (var i = 0; i < response.data.length; i++) {
         renderParkHighLvl(data.view, response.data[i]);
       }
     }
-
-    data.inputs.filterStatus = false;
 
     // Create footer page form options
     for (var tp = 1; tp <= totalPages; tp++) {
@@ -228,6 +215,7 @@ var renderParkChunks = pageNum => {
 
     $pageSpan.textContent = ' ' + totalPages;
     $footerPages.value = data.pageNum;
+    data.inputs.filterStatus = false;
   });
 
   xhrParkChunks.send();
@@ -530,7 +518,6 @@ var filterFormSearch = () => {
   }
   data.inputs = inputs;
   data.pageNum = 1;
-
   renderParkChunks(data.pageNum);
 };
 
