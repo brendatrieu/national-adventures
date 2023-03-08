@@ -27,6 +27,7 @@ var $googleMaps = document.querySelector('#google-maps');
 var $weather = document.querySelector('#weather');
 var $topics = document.querySelector('#topics');
 var $activities = document.querySelector('#activities');
+var $noFilteredResults = document.querySelector('#no-filtered-results');
 var $footer = document.querySelector('footer');
 var $pageForm = document.querySelector('.page-num');
 var $pageSpan = document.querySelector('#total-pages');
@@ -154,6 +155,8 @@ var renderParkChunks = pageNum => {
   $homePage.innerHTML = '';
   $favParks.innerHTML = '';
   $footerPages.innerHTML = '';
+  $noFilteredResults.classList.add('hidden');
+  $footer.classList.remove('hidden');
 
   if (data.view === 'home-page') {
     xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: ((pageNum - 1) * 10) }));
@@ -170,9 +173,18 @@ var renderParkChunks = pageNum => {
   xhrParkChunks.addEventListener('load', () => {
     var response = xhrParkChunks.response;
 
-    // Determine total pages
     if (data.inputs.filterStatus === true) {
       filterData(response);
+    }
+
+    // Determine total pages
+    if (data.view === 'home-filtered' || data.view === 'favorites-filtered') {
+      if (data.inputs.filteredTopics.length < 1) {
+        $noFilteredResults.classList.remove('hidden');
+        $footer.classList.add('hidden');
+        data.inputs.filterStatus = false;
+        return;
+      }
       totalPages = Math.ceil(data.inputs.filteredTopics.length / 10);
     } else if (data.view === 'home-page') {
       totalPages = Math.ceil(response.total / 10);
@@ -282,7 +294,6 @@ var viewSwap = () => {
     data.pageNum = 1;
     data.view = 'home-page';
   }
-
   switch (data.view) {
     case 'home-page':
     case 'home-filtered':
@@ -316,7 +327,6 @@ var viewSwap = () => {
     case 'Favorites':
     case 'favorites-filtered':
       $pageForm.reset();
-      // data.pageNum = 1;
       $homePage.classList.add('hidden');
       $indivPark.classList.add('hidden');
       $favorites.classList.remove('hidden');
@@ -363,6 +373,10 @@ var favToggle = event => {
     }
     targetIndex = data.favorites.indexOf(event.target.closest('.park-high-lvl').getAttribute('id'));
     data.favorites.splice(targetIndex, 1);
+    if (data.view === 'favorites-filtered') {
+      data.inputs.filteredTopics = data.inputs.filteredTopics.filter(park => park.parkCode !== event.target.closest('.park-high-lvl').getAttribute('id'));
+      viewSwap();
+    }
     if (data.view === 'Favorites') {
       viewSwap();
     }
@@ -538,6 +552,7 @@ $navHeader.addEventListener('click', () => {
 
 $navLinks.addEventListener('click', event => {
   data.view = event.target.textContent;
+  data.pageNum = 1;
   viewSwap();
 });
 
