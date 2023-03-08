@@ -10,6 +10,7 @@ body {
 .more-info,
 .find-parks,
 .filter-bar,
+#filter-search,
 .general-header,
 .subheading {
   font-family: Oswald, sans-serif;
@@ -48,9 +49,92 @@ nav {
   max-width: 80%;
 }
 
+.subheading {
+  margin: 0.75rem 0;
+}
+
+#filter-form .subheading {
+  margin-top: 0;
+}
+
 .filter-bar {
   font-size: 1.25rem;
+}
+
+.filter-bar,
+#filter-modal,
+.filter-field {
   padding: 0.25rem 0.5rem;
+  background-color: white;
+  border-radius: 0.3rem;
+}
+
+#filter-modal,
+.filter-field {
+  margin: 0.5rem 0;
+}
+
+#filter-form,
+.filter-field {
+  display: flex;
+  align-items: center;
+}
+
+.filter-field {
+  justify-content: space-between;
+  color: gray;
+  margin: 0;
+}
+
+#filter-form {
+  flex-wrap: wrap;
+  padding: 0.5rem 0.25rem;
+}
+
+.filter-field,
+fieldset {
+  border: 1px solid #dda15e;
+  font-size: 0.9rem;
+  width: 100%;
+  border-radius: 0.3rem;
+}
+
+fieldset {
+  border-top: none;
+  border-radius: 0 0 0.3rem 0.3rem;
+  margin: 0;
+  padding: 0 0.2rem;
+  height: 5rem;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+}
+
+.align-top {
+  align-self: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+#state-components {
+  width: 40%;
+}
+
+#activity-components {
+  width: 50%;
+}
+
+#topic-components {
+  width: 55%;
+}
+
+.search-button {
+  margin: 2.15rem 0 0.5rem;
+  width: 35%;
+}
+
+#filter-search {
+  align-self: flex-end;
+  width: 100%;
 }
 
 button,
@@ -91,13 +175,15 @@ img {
 
 .more-info,
 .find-parks,
+#filter-search,
 a {
   background-color: #dda15e;
   color: #fefae0;
   padding: 0.25rem 0.75rem;
 }
 
-#no-results {
+#no-results,
+#no-filtered-results {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -134,10 +220,6 @@ a {
 .general-header {
   margin: 0.5rem 0 0;
   padding: 0 1.5rem;
-}
-
-.subheading {
-  margin: 0.75rem 0;
 }
 
 a {

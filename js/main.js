@@ -4,6 +4,14 @@ var $container = document.querySelector('.container');
 var $pageHeader = document.querySelector('.page-header');
 var $headerFav = document.querySelector('#header-fav');
 var $filterBar = document.querySelector('.filter-bar');
+var $filterModal = document.querySelector('#filter-modal');
+var $filterForm = document.querySelector('#filter-form');
+var $stateDropdown = document.querySelector('#state-dropdown');
+var $activityDropdown = document.querySelector('#activity-dropdown');
+var $topicDropdown = document.querySelector('#topic-dropdown');
+var $stateOptions = document.querySelector('#state-options');
+var $activityOptions = document.querySelector('#activity-options');
+var $topicOptions = document.querySelector('#topic-options');
 var $homePage = document.querySelector('#home-page');
 var $favorites = document.querySelector('#Favorites');
 var $noResults = document.querySelector('#no-results');
@@ -19,6 +27,7 @@ var $googleMaps = document.querySelector('#google-maps');
 var $weather = document.querySelector('#weather');
 var $topics = document.querySelector('#topics');
 var $activities = document.querySelector('#activities');
+var $noFilteredResults = document.querySelector('#no-filtered-results');
 var $footer = document.querySelector('footer');
 var $pageForm = document.querySelector('.page-num');
 var $pageSpan = document.querySelector('#total-pages');
@@ -62,6 +71,7 @@ var createApiUrl = obj => {
       apiParams += `&${param + '=' + apiObj[param]}`;
     }
   }
+
   return corsPrefix + encodeURIComponent(urlStart + apiParams + urlEnd);
 };
 
@@ -116,26 +126,69 @@ var renderParkHighLvl = (view, entry) => {
   $parkDiv.appendChild($imgDiv);
   $parkDiv.appendChild($detailsDiv);
 
-  if (view === 'home-page') {
+  if (view === 'home-page' || view === 'home-filtered') {
     $homePage.appendChild($parkDiv);
-  } else if (view === 'Favorites') {
+  } else if (view === 'Favorites' || view === 'favorites-filtered') {
     $favParks.appendChild($parkDiv);
   }
-
 };
 
-// Define a function to render page numbers based on total parks
-var renderPageNums = view => {
-  var xhrPages = new XMLHttpRequest();
-  xhrPages.open('GET', createApiUrl({ limit: 500 }));
-  xhrPages.responseType = 'json';
-  xhrPages.addEventListener('load', () => {
-    $footerPages.innerHTML = '';
-    var totalPages = 0;
-    if (data.view === 'home-page') {
-      totalPages = Math.ceil(xhrPages.response.total / 10);
+var filterData = response => {
+  for (var p = 0; p < response.data.length; p++) {
+    var match = 0;
+    var combinedData = [...response.data[p].activities, ...response.data[p].topics];
+    for (var t = 0; t < combinedData.length; t++) {
+      if (data.inputs.topics.indexOf(combinedData[t].name) !== -1) {
+        match++;
+      }
     }
-    if (data.view === 'Favorites') {
+    if (match === data.inputs.topics.length) {
+      data.inputs.filteredTopics.push(response.data[p]);
+    }
+  }
+};
+
+// Define a function to render park segments based on page number
+var renderParkChunks = pageNum => {
+  var xhrParkChunks = new XMLHttpRequest();
+  var totalPages = 0;
+  $homePage.innerHTML = '';
+  $favParks.innerHTML = '';
+  $footerPages.innerHTML = '';
+  $noFilteredResults.classList.add('hidden');
+  $footer.classList.remove('hidden');
+
+  if (data.view === 'home-page') {
+    xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: ((pageNum - 1) * 10) }));
+  } else if (data.view === 'home-filtered') {
+    xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, limit: 500, start: ((pageNum - 1) * 10) }));
+  } else if (data.view === 'Favorites') {
+    xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: ((pageNum - 1) * 10) }));
+  } else if (data.view === 'favorites-filtered') {
+    xhrParkChunks.open('GET', createApiUrl({ stateCode: data.inputs.stateCode, parkCode: data.favorites, limit: 10, start: ((pageNum - 1) * 10) }));
+  }
+
+  xhrParkChunks.responseType = 'json';
+
+  xhrParkChunks.addEventListener('load', () => {
+    var response = xhrParkChunks.response;
+
+    if (data.inputs.filterStatus === true) {
+      filterData(response);
+    }
+
+    // Determine total pages
+    if (data.view === 'home-filtered' || data.view === 'favorites-filtered') {
+      if (data.inputs.filteredTopics.length < 1) {
+        $noFilteredResults.classList.remove('hidden');
+        $footer.classList.add('hidden');
+        data.inputs.filterStatus = false;
+        return;
+      }
+      totalPages = Math.ceil(data.inputs.filteredTopics.length / 10);
+    } else if (data.view === 'home-page') {
+      totalPages = Math.ceil(response.total / 10);
+    } else if (data.view === 'Favorites') {
       if (data.favorites.length >= 10) {
         totalPages = Math.ceil(data.favorites.length / 10);
       } else if (!data.favorites.length) {
@@ -144,44 +197,39 @@ var renderPageNums = view => {
         totalPages = 1;
       }
     }
-    for (var i = 1; i <= totalPages; i++) {
+
+    // Display parks based on page number/total
+    if (data.view === 'home-filtered' || data.view === 'favorites-filtered') {
+      var start = 0;
+      var end = data.inputs.filteredTopics.length;
+      if (data.inputs.filteredTopics.length > 10) {
+        start = (pageNum - 1) * 10;
+        if (pageNum < totalPages) {
+          end = start + 10;
+        }
+      }
+      for (start; start < end; start++) {
+        renderParkHighLvl(data.view, data.inputs.filteredTopics[start]);
+      }
+    } else {
+      for (var i = 0; i < response.data.length; i++) {
+        renderParkHighLvl(data.view, response.data[i]);
+      }
+    }
+
+    // Create footer page form options
+    for (var tp = 1; tp <= totalPages; tp++) {
       var $addtPage = document.createElement('option');
-      $addtPage.setAttribute('value', i);
-      $addtPage.textContent = i;
+      $addtPage.setAttribute('value', tp);
+      $addtPage.textContent = tp;
       $footerPages.appendChild($addtPage);
     }
+
     $pageSpan.textContent = ' ' + totalPages;
     $footerPages.value = data.pageNum;
+    data.inputs.filterStatus = false;
   });
 
-  xhrPages.send();
-};
-
-// Define a function to render park segments based on page number
-var renderParkChunks = pageNum => {
-  var xhrParkChunks = new XMLHttpRequest();
-  $homePage.innerHTML = '';
-  $favParks.innerHTML = '';
-
-  if (data.view === 'home-page') {
-    if (pageNum === 1) {
-      xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: 0 }));
-    } else {
-      xhrParkChunks.open('GET', createApiUrl({ limit: 10, start: (pageNum * 10) + 1 }));
-    }
-  } else if (data.view === 'Favorites') {
-    if (pageNum === 1) {
-      xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: 0 }));
-    } else {
-      xhrParkChunks.open('GET', createApiUrl({ parkCode: data.favorites, limit: 10, start: (pageNum * 10) + 1 }));
-    }
-  }
-  xhrParkChunks.responseType = 'json';
-  xhrParkChunks.addEventListener('load', () => {
-    for (var i = 0; i < xhrParkChunks.response.data.length; i++) {
-      renderParkHighLvl(data.view, xhrParkChunks.response.data[i]);
-    }
-  });
   xhrParkChunks.send();
 };
 
@@ -242,18 +290,19 @@ Email: ${parkContacts.emailAddresses[0].emailAddress}`;
 
 // Define a view-swapping function
 var viewSwap = () => {
-  renderPageNums(data.view);
   if (data.firstLoad && !data.reloaded) {
     data.pageNum = 1;
     data.view = 'home-page';
   }
   switch (data.view) {
     case 'home-page':
+    case 'home-filtered':
       $pageForm.reset();
       renderParkChunks(data.pageNum);
       $indivPark.classList.add('hidden');
       $homePage.classList.remove('hidden');
       $filterBar.classList.remove('hidden');
+      $filterModal.classList.add('hidden');
       $favorites.classList.add('hidden');
       $footer.classList.remove('hidden');
       $pageHeader.textContent = 'National Parks';
@@ -265,6 +314,7 @@ var viewSwap = () => {
       $homePage.classList.add('hidden');
       $favorites.classList.add('hidden');
       $filterBar.classList.add('hidden');
+      $filterModal.classList.add('hidden');
       $footer.classList.add('hidden');
       $headerFav.className = 'fa-regular fa-star';
       if (data.favorites.includes(data.targetPark)) {
@@ -275,12 +325,13 @@ var viewSwap = () => {
       $activities.scrollTo(0, 0);
       break;
     case 'Favorites':
+    case 'favorites-filtered':
       $pageForm.reset();
-      data.pageNum = 1;
       $homePage.classList.add('hidden');
       $indivPark.classList.add('hidden');
       $favorites.classList.remove('hidden');
       $filterBar.classList.remove('hidden');
+      $filterModal.classList.add('hidden');
       $pageHeader.textContent = 'Favorites';
       $headerFav.classList.add('hidden');
       if (data.favorites.length < 1) {
@@ -322,29 +373,186 @@ var favToggle = event => {
     }
     targetIndex = data.favorites.indexOf(event.target.closest('.park-high-lvl').getAttribute('id'));
     data.favorites.splice(targetIndex, 1);
+    if (data.view === 'favorites-filtered') {
+      data.inputs.filteredTopics = data.inputs.filteredTopics.filter(park => park.parkCode !== event.target.closest('.park-high-lvl').getAttribute('id'));
+      viewSwap();
+    }
     if (data.view === 'Favorites') {
       viewSwap();
     }
   }
 };
 
-// Event listeners
+// Define a function to add state options to the dropdown menu
+var filterDropdowns = () => {
+  // Load states
+  data.states.forEach(state => {
+    var $label = document.createElement('label');
+    var $input = document.createElement('input');
 
-$pageForm.addEventListener('input', () => {
-  data.pageNum = $pageForm.elements['page-num'].value;
-  $homePage.innerHTML = '';
+    $input.setAttribute('type', 'checkbox');
+    $input.setAttribute('name', 'state');
+    $input.setAttribute('value', state.abbreviation);
+
+    $label.appendChild($input);
+    $label.insertAdjacentText('beforeend', '' + state.name);
+    $stateOptions.appendChild($label);
+  });
+
+  // Load activities
+  var xhrAct = new XMLHttpRequest();
+  var activitiesList = [];
+  xhrAct.open('GET', 'https://developer.nps.gov/api/v1/activities/parks?api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo');
+  xhrAct.responseType = 'json';
+  xhrAct.addEventListener('load', () => {
+    for (var a = 0; a < xhrAct.response.data.length; a++) {
+      activitiesList.push(xhrAct.response.data[a].name);
+      activitiesList.sort((a, b) => {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    activitiesList.forEach(act => {
+      var $label = document.createElement('label');
+      var $input = document.createElement('input');
+
+      $input.setAttribute('type', 'checkbox');
+      $input.setAttribute('name', 'activity');
+      $input.setAttribute('value', act);
+
+      $label.appendChild($input);
+      $label.insertAdjacentText('beforeend', '' + act);
+      $activityOptions.appendChild($label);
+    });
+  });
+  xhrAct.send();
+
+  // Load topics
+  var xhrTop = new XMLHttpRequest();
+  var topicsList = [];
+  xhrTop.open('GET', 'https://developer.nps.gov/api/v1/topics?limit=100&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo');
+  xhrTop.responseType = 'json';
+  xhrTop.addEventListener('load', () => {
+    for (var t = 0; t < xhrTop.response.data.length; t++) {
+      topicsList.push(xhrTop.response.data[t].name);
+      topicsList.sort((a, b) => {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    topicsList.forEach(top => {
+      var $label = document.createElement('label');
+      var $input = document.createElement('input');
+
+      $input.setAttribute('type', 'checkbox');
+      $input.setAttribute('name', 'topic');
+      $input.setAttribute('value', top);
+
+      $label.appendChild($input);
+      $label.insertAdjacentText('beforeend', '' + top);
+      $topicOptions.appendChild($label);
+    });
+  });
+  xhrTop.send();
+};
+
+filterDropdowns();
+
+// Define a filter modal toggle function
+var toggleFilterBar = () => {
+  if ($filterModal.matches('.hidden')) {
+    $filterModal.classList.remove('hidden');
+  } else {
+    $filterModal.classList.add('hidden');
+  }
+};
+
+var toggleFilterOptions = option => {
+  if (!option.nextElementSibling.className) {
+    option.nextElementSibling.className = 'hidden';
+    option.style.backgroundColor = 'white';
+    option.style.borderBottom = '1px solid #dda15e';
+    option.style.borderRadius = '0.3rem';
+  } else {
+    option.nextElementSibling.className = '';
+    option.style.borderBottom = 'none';
+    option.style.borderRadius = '0.3rem 0.3rem 0 0';
+    option.style.backgroundColor = '#fcf6ed';
+  }
+};
+
+var filterFormSearch = () => {
+  toggleFilterBar();
+  event.preventDefault();
+  var inputs = {
+    stateCode: [],
+    topics: [],
+    filteredTopics: [],
+    filterStatus: true
+  };
+
+  for (var e = 0; e < $filterForm.elements.length; e++) {
+    if ($filterForm.elements[e].tagName === 'INPUT' && $filterForm.elements[e].checked) {
+      switch ($filterForm.elements[e].name) {
+        case 'state':
+          inputs.stateCode.push($filterForm.elements[e].value);
+          break;
+        case 'topic':
+        case 'activity':
+          inputs.topics.push($filterForm.elements[e].value);
+          break;
+      }
+    }
+  }
+
+  $filterForm.reset();
+  if (!$stateOptions.className) {
+    toggleFilterOptions($stateDropdown);
+  }
+  if (!$topicOptions.className) {
+    toggleFilterOptions($topicDropdown);
+  }
+  if (!$activityOptions.className) {
+    toggleFilterOptions($activityDropdown);
+  }
+  if (data.view === 'home-page') {
+    data.view = 'home-filtered';
+  } else if (data.view === 'Favorites') {
+    data.view = 'favorites-filtered';
+  }
+  data.inputs = inputs;
+  data.pageNum = 1;
   renderParkChunks(data.pageNum);
-});
+};
 
-$navLinks.addEventListener('click', event => {
-  data.view = event.target.textContent;
+/**
+ * Event listeners
+ * */
+
+document.addEventListener('DOMContentLoaded', () => {
+  data.firstLoad = true;
   viewSwap();
 });
 
 $navHeader.addEventListener('click', () => {
   data.view = 'home-page';
   data.pageNum = 1;
-  renderPageNums(data.view);
+  viewSwap();
+});
+
+$navLinks.addEventListener('click', event => {
+  data.view = event.target.textContent;
+  data.pageNum = 1;
   viewSwap();
 });
 
@@ -359,12 +567,23 @@ $container.addEventListener('click', event => {
   }
 });
 
+$filterBar.addEventListener('click', toggleFilterBar);
+
+$filterForm.addEventListener('click', event => {
+  if (event.target.matches('.filter-field')) {
+    toggleFilterOptions(event.target);
+  }
+});
+
+$filterForm.addEventListener('submit', filterFormSearch);
+
 $findParks.addEventListener('click', () => {
   data.view = 'home-page';
   viewSwap();
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  data.firstLoad = true;
-  viewSwap();
+$pageForm.addEventListener('input', () => {
+  data.pageNum = $pageForm.elements['page-num'].value;
+  $homePage.innerHTML = '';
+  renderParkChunks(data.pageNum);
 });
