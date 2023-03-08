@@ -135,14 +135,16 @@ var renderParkHighLvl = (view, entry) => {
 
 var filterData = response => {
   for (var p = 0; p < response.data.length; p++) {
-    var match = 0;
+    var matchCount = 0;
+    var matchArr = [];
     var combinedData = [...response.data[p].activities, ...response.data[p].topics];
     for (var t = 0; t < combinedData.length; t++) {
-      if (data.inputs.topics.indexOf(combinedData[t].name) !== -1) {
-        match++;
+      if (data.inputs.topics.includes(combinedData[t].name) && !matchArr.includes(combinedData[t].name)) {
+        matchCount++;
+        matchArr.push(combinedData[t].name);
       }
     }
-    if (match === data.inputs.topics.length) {
+    if (matchCount === data.inputs.topics.length) {
       data.inputs.filteredTopics.push(response.data[p]);
     }
   }
@@ -264,25 +266,29 @@ Email: ${parkContacts.emailAddresses[0].emailAddress}`;
       return 0;
     });
 
-    parkResp.activities.sort((a, b) => {
-      if (a.name < b.name) {
+    parkResp.activities.sort((c, d) => {
+      if (c.name < d.name) {
         return -1;
-      } else if (a.name > b.name) {
+      } else if (c.name > d.name) {
         return 1;
       }
       return 0;
     });
 
     for (var t = 0; t < parkResp.topics.length; t++) {
-      var $liTop = document.createElement('li');
-      $liTop.textContent = parkResp.topics[t].name;
-      $topics.appendChild($liTop);
+      if (data.topics.includes(parkResp.topics[t].name)) {
+        var $liTop = document.createElement('li');
+        $liTop.textContent = parkResp.topics[t].name;
+        $topics.appendChild($liTop);
+      }
     }
 
     for (var a = 0; a < parkResp.activities.length; a++) {
-      var $liAct = document.createElement('li');
-      $liAct.textContent = parkResp.activities[a].name;
-      $activities.appendChild($liAct);
+      if (data.activities.includes(parkResp.activities[a].name)) {
+        var $liAct = document.createElement('li');
+        $liAct.textContent = parkResp.activities[a].name;
+        $activities.appendChild($liAct);
+      }
     }
   });
   xhrPark.send();
@@ -428,6 +434,8 @@ var filterDropdowns = () => {
       $label.appendChild($input);
       $label.insertAdjacentText('beforeend', '' + act);
       $activityOptions.appendChild($label);
+
+      data.activities.push(act);
     });
   });
   xhrAct.send();
@@ -461,6 +469,7 @@ var filterDropdowns = () => {
       $label.appendChild($input);
       $label.insertAdjacentText('beforeend', '' + top);
       $topicOptions.appendChild($label);
+      data.topics.push(top);
     });
   });
   xhrTop.send();
