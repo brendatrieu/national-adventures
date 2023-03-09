@@ -10,6 +10,7 @@ body {
 .more-info,
 .find-parks,
 .filter-bar,
+#clear-filter,
 #filter-search,
 .general-header,
 .subheading {
@@ -110,11 +111,6 @@ fieldset {
   flex-direction: column;
 }
 
-.align-top {
-  align-self: flex-start;
-  margin-bottom: 0.5rem;
-}
-
 #state-components {
   width: 40%;
 }
@@ -127,14 +123,26 @@ fieldset {
   width: 55%;
 }
 
-.search-button {
-  margin: 2.15rem 0 0.5rem;
+.search-buttons {
+  margin: 2.2rem 0 0.5rem;
   width: 35%;
+  display: flex;
+  justify-content: space-between;
+}
+
+#clear-filter {
+  color: #dda15e;
+  background-color: white;
+  border: 1px solid #dda15e;
+  padding: 0.2em 0;
+  width: 50%;
 }
 
 #filter-search {
-  align-self: flex-end;
-  width: 100%;
+  background-color: #dda15e;
+  color: #fefae0;
+  padding: 0.2rem 0;
+  width: 45%;
 }
 
 button,
@@ -175,7 +183,6 @@ img {
 
 .more-info,
 .find-parks,
-#filter-search,
 a {
   background-color: #dda15e;
   color: #fefae0;
@@ -255,6 +262,11 @@ p {
 }
 
 @media screen and (min-width: 768px) {
+  #clear-filter,
+  #filter-search {
+    width: 45%;
+  }
+
   .park-high-lvl {
     display: flex;
   }
