@@ -22,6 +22,11 @@
   justify-content: space-around;
 }
 
+.align-top {
+  align-self: flex-start;
+  margin-bottom: 0.5rem;
+}
+
 .align-right {
   display: flex;
   justify-content: flex-end;

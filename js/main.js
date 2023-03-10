@@ -12,6 +12,7 @@ var $topicDropdown = document.querySelector('#topic-dropdown');
 var $stateOptions = document.querySelector('#state-options');
 var $activityOptions = document.querySelector('#activity-options');
 var $topicOptions = document.querySelector('#topic-options');
+var $clearAll = document.querySelector('#clear-filter');
 var $homePage = document.querySelector('#home-page');
 var $favorites = document.querySelector('#Favorites');
 var $noResults = document.querySelector('#no-results');
@@ -237,6 +238,8 @@ var renderParkChunks = pageNum => {
 
 // Define a function to load the individual park view with corresponding data
 var loadIndivPark = () => {
+  $topics.innerHTML = '';
+  $activities.innerHTML = '';
   var xhrPark = new XMLHttpRequest();
   xhrPark.open('GET', createApiUrl({ parkCode: data.targetPark }));
   xhrPark.responseType = 'json';
@@ -294,12 +297,40 @@ Email: ${parkContacts.emailAddresses[0].emailAddress}`;
   xhrPark.send();
 };
 
+var loadFilters = () => {
+  if (data.view === 'home-filtered' || data.view === 'favorites-filtered') {
+    if (data.inputs.stateCode) {
+      for (var st of data.inputs.stateCode) {
+        $filterForm.elements[st].checked = true;
+      }
+    }
+    if (data.inputs.topics) {
+      for (var top of data.inputs.topics) {
+        var checkedId = top.split('').filter(char => char !== ' ').join('');
+        if (document.getElementById(checkedId)) {
+          document.getElementById(checkedId).checked = true;
+        }
+      }
+    }
+  }
+};
+
 // Define a view-swapping function
 var viewSwap = () => {
+
   if (data.firstLoad && !data.reloaded) {
     data.pageNum = 1;
     data.view = 'home-page';
+    data.inputs = {};
   }
+
+  if (data.view === 'home-filtered' && !Object.keys(data.inputs)) {
+    data.view = 'home-page';
+  }
+  if (data.view === 'favorites-filtered' && !Object.keys(data.inputs)) {
+    data.view = 'Favorites';
+  }
+
   switch (data.view) {
     case 'home-page':
     case 'home-filtered':
@@ -313,6 +344,7 @@ var viewSwap = () => {
       $footer.classList.remove('hidden');
       $pageHeader.textContent = 'National Parks';
       $headerFav.classList.add('hidden');
+      $noFilteredResults.classList.add('hidden');
       break;
     case 'individual-park':
       data.pageNum = 1;
@@ -322,6 +354,7 @@ var viewSwap = () => {
       $filterBar.classList.add('hidden');
       $filterModal.classList.add('hidden');
       $footer.classList.add('hidden');
+      $noFilteredResults.classList.add('hidden');
       $headerFav.className = 'fa-regular fa-star';
       if (data.favorites.includes(data.targetPark)) {
         $headerFav.className = 'fa-solid fa-star';
@@ -391,6 +424,7 @@ var favToggle = event => {
 
 // Define a function to add state options to the dropdown menu
 var filterDropdowns = () => {
+
   // Load states
   data.states.forEach(state => {
     var $label = document.createElement('label');
@@ -399,6 +433,7 @@ var filterDropdowns = () => {
     $input.setAttribute('type', 'checkbox');
     $input.setAttribute('name', 'state');
     $input.setAttribute('value', state.abbreviation);
+    $input.setAttribute('id', state.abbreviation);
 
     $label.appendChild($input);
     $label.insertAdjacentText('beforeend', '' + state.name);
@@ -424,19 +459,21 @@ var filterDropdowns = () => {
       });
     }
     activitiesList.forEach(act => {
+      data.activities.push(act);
       var $label = document.createElement('label');
       var $input = document.createElement('input');
+      var actId = act.split('').filter(char => char !== ' ').join('');
 
       $input.setAttribute('type', 'checkbox');
       $input.setAttribute('name', 'activity');
       $input.setAttribute('value', act);
+      $input.setAttribute('id', actId);
 
       $label.appendChild($input);
       $label.insertAdjacentText('beforeend', '' + act);
       $activityOptions.appendChild($label);
-
-      data.activities.push(act);
     });
+    loadFilters();
   });
   xhrAct.send();
 
@@ -459,18 +496,21 @@ var filterDropdowns = () => {
       });
     }
     topicsList.forEach(top => {
+      data.topics.push(top);
       var $label = document.createElement('label');
       var $input = document.createElement('input');
+      var topId = top.split('').filter(char => char !== ' ').join('');
 
       $input.setAttribute('type', 'checkbox');
       $input.setAttribute('name', 'topic');
       $input.setAttribute('value', top);
+      $input.setAttribute('id', topId);
 
       $label.appendChild($input);
       $label.insertAdjacentText('beforeend', '' + top);
       $topicOptions.appendChild($label);
-      data.topics.push(top);
     });
+    loadFilters();
   });
   xhrTop.send();
 };
@@ -500,6 +540,28 @@ var toggleFilterOptions = option => {
   }
 };
 
+var filterFormCollapse = () => {
+  if (!$stateOptions.className) {
+    toggleFilterOptions($stateDropdown);
+  }
+  if (!$topicOptions.className) {
+    toggleFilterOptions($topicDropdown);
+  }
+  if (!$activityOptions.className) {
+    toggleFilterOptions($activityDropdown);
+  }
+};
+
+var filterClear = event => {
+  event.preventDefault();
+  for (var e = 0; e < $filterForm.elements.length; e++) {
+    if ($filterForm.elements[e].tagName === 'INPUT' && $filterForm.elements[e].checked) {
+      $filterForm.elements[e].checked = false;
+    }
+  }
+  data.inputs = {};
+};
+
 var filterFormSearch = () => {
   toggleFilterBar();
   event.preventDefault();
@@ -524,16 +586,8 @@ var filterFormSearch = () => {
     }
   }
 
-  $filterForm.reset();
-  if (!$stateOptions.className) {
-    toggleFilterOptions($stateDropdown);
-  }
-  if (!$topicOptions.className) {
-    toggleFilterOptions($topicDropdown);
-  }
-  if (!$activityOptions.className) {
-    toggleFilterOptions($activityDropdown);
-  }
+  filterFormCollapse();
+
   if (data.view === 'home-page') {
     data.view = 'home-filtered';
   } else if (data.view === 'Favorites') {
@@ -556,12 +610,18 @@ document.addEventListener('DOMContentLoaded', () => {
 $navHeader.addEventListener('click', () => {
   data.view = 'home-page';
   data.pageNum = 1;
+  data.inputs = {};
+  $filterForm.reset();
+  filterFormCollapse();
   viewSwap();
 });
 
 $navLinks.addEventListener('click', event => {
   data.view = event.target.textContent;
   data.pageNum = 1;
+  data.inputs = {};
+  $filterForm.reset();
+  filterFormCollapse();
   viewSwap();
 });
 
@@ -583,6 +643,8 @@ $filterForm.addEventListener('click', event => {
     toggleFilterOptions(event.target);
   }
 });
+
+$clearAll.addEventListener('click', filterClear);
 
 $filterForm.addEventListener('submit', filterFormSearch);
 
