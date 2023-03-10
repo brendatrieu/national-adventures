@@ -12,6 +12,7 @@ var $topicDropdown = document.querySelector('#topic-dropdown');
 var $stateOptions = document.querySelector('#state-options');
 var $activityOptions = document.querySelector('#activity-options');
 var $topicOptions = document.querySelector('#topic-options');
+var $clearAll = document.querySelector('#clear-filter');
 var $homePage = document.querySelector('#home-page');
 var $favorites = document.querySelector('#Favorites');
 var $noResults = document.querySelector('#no-results');
@@ -323,6 +324,13 @@ var viewSwap = () => {
     data.inputs = {};
   }
 
+  if (data.view === 'home-filtered' && !Object.keys(data.inputs)) {
+    data.view = 'home-page';
+  }
+  if (data.view === 'favorites-filtered' && !Object.keys(data.inputs)) {
+    data.view = 'Favorites';
+  }
+
   switch (data.view) {
     case 'home-page':
     case 'home-filtered':
@@ -544,6 +552,16 @@ var filterFormCollapse = () => {
   }
 };
 
+var filterClear = event => {
+  event.preventDefault();
+  for (var e = 0; e < $filterForm.elements.length; e++) {
+    if ($filterForm.elements[e].tagName === 'INPUT' && $filterForm.elements[e].checked) {
+      $filterForm.elements[e].checked = false;
+    }
+  }
+  data.inputs = {};
+};
+
 var filterFormSearch = () => {
   toggleFilterBar();
   event.preventDefault();
@@ -625,6 +643,8 @@ $filterForm.addEventListener('click', event => {
     toggleFilterOptions(event.target);
   }
 });
+
+$clearAll.addEventListener('click', filterClear);
 
 $filterForm.addEventListener('submit', filterFormSearch);
 
