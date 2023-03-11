@@ -32,13 +32,13 @@
         <h1 class="page-header">National Parks</h1>
         <i id="header-fav" class="hidden fa-regular fa-star"></i>
       </div>
-      <button class="filter-bar col-two-fifths" type="button"><span>Filter</span><i class="fa-solid fa-filter"></i></button>
+      <button class="filter-bar col-two-fifths" type="button">Filter<i class="fa-solid fa-filter"></i></button>
       <div class="col-full hidden" id="filter-modal">
         <form method="get" id="filter-form">
           <div class="align-top col-half flex">
             <div class="align-top" id="state-components">
               <h4 class="subheading">States</h4>
-              <button class="filter-field" id="state-dropdown" type="button"><span>Select</span><i
+              <button class="filter-field" id="state-dropdown" type="button">Select<i
                   class="fa-solid fa-caret-down"></i></button>
               <fieldset class="hidden" id="state-options">
 
@@ -46,7 +46,7 @@
             </div>
             <div class="align-top" id="activity-components">
               <h4 class="subheading">Activities</h4>
-              <button class="filter-field" id="activity-dropdown" type="button"><span>Select</span><i
+              <button class="filter-field" id="activity-dropdown" type="button">Select<i
                   class="fa-solid fa-caret-down"></i></button>
               <fieldset class="hidden" id="activity-options">
 
@@ -98,15 +98,15 @@
             <p id="weather"></p>
           </div>
         </div>
-        <h2 class="general-header">Things to Do</h2>
-        <div class="direction-swap">
-          <div class="col-half">
+        <h2 class="general-header" id="things-to-do-header">Things to Do</h2>
+        <div class="direction-swap" id="things-to-do-div">
+          <div class="col-half" id="topics-section">
             <h4 class="subheading">Topics: </h4>
             <ul class="overflow" id="topics">
 
             </ul>
           </div>
-          <div class="col-half">
+          <div class="col-half" id="activities-section">
             <h4 class="subheading">Activities: </h4>
             <ul class="overflow" id="activities">
 

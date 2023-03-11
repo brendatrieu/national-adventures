@@ -62,15 +62,15 @@ var data = {
     { name: 'Wyoming', abbreviation: 'WY' }]
 };
 
-window.addEventListener('beforeunload', () => {
-  localStorage.setItem('nationalAdventures', JSON.stringify({ ...data, reloaded: false }));
-  sessionStorage.setItem('nationalAdventuresSession', JSON.stringify({ ...data, reloaded: true }));
-});
+// window.addEventListener('beforeunload', () => {
+//   localStorage.setItem('nationalAdventures', JSON.stringify({ ...data, reloaded: false }));
+//   sessionStorage.setItem('nationalAdventuresSession', JSON.stringify({ ...data, reloaded: true }));
+// });
 
-if (localStorage.getItem('nationalAdventures')) {
-  data = JSON.parse(localStorage.getItem('nationalAdventures'));
-}
+// if (localStorage.getItem('nationalAdventures')) {
+//   data = JSON.parse(localStorage.getItem('nationalAdventures'));
+// }
 
-if (sessionStorage.getItem('nationalAdventuresSession')) {
-  data = JSON.parse(sessionStorage.getItem('nationalAdventuresSession'));
-}
+// if (sessionStorage.getItem('nationalAdventuresSession')) {
+//   data = JSON.parse(sessionStorage.getItem('nationalAdventuresSession'));
+// }
