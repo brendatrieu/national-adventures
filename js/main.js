@@ -26,6 +26,10 @@ var $directions = document.querySelector('#directions');
 var $directionUrl = document.querySelector('#directions-url');
 var $googleMaps = document.querySelector('#google-maps');
 var $weather = document.querySelector('#weather');
+var $thingsToDoHeader = document.querySelector('#things-to-do-header');
+var $thingsToDoDiv = document.querySelector('#things-to-do-div');
+var $topicsSection = document.querySelector('#topics-section');
+var $activitiesSection = document.querySelector('#activities-section');
 var $topics = document.querySelector('#topics');
 var $activities = document.querySelector('#activities');
 var $noFilteredResults = document.querySelector('#no-filtered-results');
@@ -240,6 +244,11 @@ var renderParkChunks = pageNum => {
 var loadIndivPark = () => {
   $topics.innerHTML = '';
   $activities.innerHTML = '';
+  $thingsToDoHeader.classList.remove('hidden');
+  $thingsToDoDiv.classList.remove('hidden');
+  $topicsSection.classList.remove('hidden');
+  $activitiesSection.classList.remove('hidden');
+
   var xhrPark = new XMLHttpRequest();
   xhrPark.open('GET', createApiUrl({ parkCode: data.targetPark }));
   xhrPark.responseType = 'json';
@@ -292,6 +301,15 @@ Email: ${parkContacts.emailAddresses[0].emailAddress}`;
         $liAct.textContent = parkResp.activities[a].name;
         $activities.appendChild($liAct);
       }
+    }
+
+    if (!parkResp.topics.length && !parkResp.activities.length) {
+      $thingsToDoHeader.classList.add('hidden');
+      $thingsToDoDiv.classList.add('hidden');
+    } else if (!parkResp.topics.length) {
+      $topicsSection.classList.add('hidden');
+    } else if (!parkResp.activities.length) {
+      $activitiesSection.classList.add('hidden');
     }
   });
   xhrPark.send();
