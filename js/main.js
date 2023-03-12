@@ -660,6 +660,9 @@ $filterForm.addEventListener('click', event => {
   if (event.target.matches('.filter-field')) {
     toggleFilterOptions(event.target);
   }
+  if (event.target.matches('.fa-caret-down')) {
+    toggleFilterOptions(event.target.closest('.filter-field'));
+  }
 });
 
 $clearAll.addEventListener('click', filterClear);
