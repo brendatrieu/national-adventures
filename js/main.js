@@ -391,6 +391,7 @@ var viewSwap = () => {
       $filterModal.classList.add('hidden');
       $pageHeader.textContent = 'Favorites';
       $headerFav.classList.add('hidden');
+      $noFilteredResults.classList.add('hidden');
       if (data.favorites.length < 1) {
         $favParks.className = 'hidden';
         $noResults.classList.remove('hidden');
