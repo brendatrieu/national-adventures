@@ -1,57 +1,57 @@
-var $navHeader = document.querySelector('.nav-header');
-var $navLinks = document.querySelector('.nav-links');
-var $container = document.querySelector('.container');
-var $pageHeader = document.querySelector('.page-header');
-var $headerFav = document.querySelector('#header-fav');
-var $filterBar = document.querySelector('.filter-bar');
-var $filterModal = document.querySelector('#filter-modal');
-var $filterForm = document.querySelector('#filter-form');
-var $stateDropdown = document.querySelector('#state-dropdown');
-var $activityDropdown = document.querySelector('#activity-dropdown');
-var $topicDropdown = document.querySelector('#topic-dropdown');
-var $stateOptions = document.querySelector('#state-options');
-var $activityOptions = document.querySelector('#activity-options');
-var $topicOptions = document.querySelector('#topic-options');
-var $clearAll = document.querySelector('#clear-filter');
-var $homePage = document.querySelector('#home-page');
-var $favorites = document.querySelector('#Favorites');
-var $noResults = document.querySelector('#no-results');
-var $favParks = document.querySelector('#fav-parks');
-var $findParks = document.querySelector('.find-parks');
-var $indivPark = document.querySelector('#individual-park');
-var $indivParkImg = document.querySelector('#indiv-park-img');
-var $address = document.querySelector('#address');
-var $contactInfo = document.querySelector('#contact-info');
-var $directions = document.querySelector('#directions');
-var $directionUrl = document.querySelector('#directions-url');
-var $googleMaps = document.querySelector('#google-maps');
-var $weather = document.querySelector('#weather');
-var $thingsToDoHeader = document.querySelector('#things-to-do-header');
-var $thingsToDoDiv = document.querySelector('#things-to-do-div');
-var $topicsSection = document.querySelector('#topics-section');
-var $activitiesSection = document.querySelector('#activities-section');
-var $topics = document.querySelector('#topics');
-var $activities = document.querySelector('#activities');
-var $noFilteredResults = document.querySelector('#no-filtered-results');
-var $footer = document.querySelector('footer');
-var $pageForm = document.querySelector('.page-num');
-var $pageSpan = document.querySelector('#total-pages');
-var $footerPages = document.querySelector('#page-num');
+const $navHeader = document.querySelector('.nav-header');
+const $navLinks = document.querySelector('.nav-links');
+const $container = document.querySelector('.container');
+const $pageHeader = document.querySelector('.page-header');
+const $headerFav = document.querySelector('#header-fav');
+const $filterBar = document.querySelector('.filter-bar');
+const $filterModal = document.querySelector('#filter-modal');
+const $filterForm = document.querySelector('#filter-form');
+const $stateDropdown = document.querySelector('#state-dropdown');
+const $activityDropdown = document.querySelector('#activity-dropdown');
+const $topicDropdown = document.querySelector('#topic-dropdown');
+const $stateOptions = document.querySelector('#state-options');
+const $activityOptions = document.querySelector('#activity-options');
+const $topicOptions = document.querySelector('#topic-options');
+const $clearAll = document.querySelector('#clear-filter');
+const $homePage = document.querySelector('#home-page');
+const $favorites = document.querySelector('#Favorites');
+const $noResults = document.querySelector('#no-results');
+const $favParks = document.querySelector('#fav-parks');
+const $findParks = document.querySelector('.find-parks');
+const $indivPark = document.querySelector('#individual-park');
+const $indivParkImg = document.querySelector('#indiv-park-img');
+const $address = document.querySelector('#address');
+const $contactInfo = document.querySelector('#contact-info');
+const $directions = document.querySelector('#directions');
+const $directionUrl = document.querySelector('#directions-url');
+const $googleMaps = document.querySelector('#google-maps');
+const $weather = document.querySelector('#weather');
+const $thingsToDoHeader = document.querySelector('#things-to-do-header');
+const $thingsToDoDiv = document.querySelector('#things-to-do-div');
+const $topicsSection = document.querySelector('#topics-section');
+const $activitiesSection = document.querySelector('#activities-section');
+const $topics = document.querySelector('#topics');
+const $activities = document.querySelector('#activities');
+const $noFilteredResults = document.querySelector('#no-filtered-results');
+const $footer = document.querySelector('footer');
+const $pageForm = document.querySelector('.page-num');
+const $pageSpan = document.querySelector('#total-pages');
+const $footerPages = document.querySelector('#page-num');
 
 // Define a function to create an API url for each case
-var createApiUrl = obj => {
-  var corsPrefix = 'https://lfz-cors.herokuapp.com/?url=';
-  var urlStart = 'http://developer.nps.gov/api/v1/parks?';
-  var urlEnd = '&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo';
-  var apiObj = {
+const createApiUrl = obj => {
+  const corsPrefix = 'https://lfz-cors.herokuapp.com/?url=';
+  const urlStart = 'http://developer.nps.gov/api/v1/parks?';
+  const urlEnd = '&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo';
+  const apiObj = {
     parkCode: '',
     stateCode: '',
     limit: '',
     start: '',
     q: ''
   };
-  var apiParams = '';
-  for (var key in obj) {
+  let apiParams = '';
+  for (const key in obj) {
     if (Object.hasOwn(apiObj, key) === false) {
       return;
     }
@@ -70,8 +70,7 @@ var createApiUrl = obj => {
       apiObj[key] = obj[key];
     }
   }
-
-  for (var param in apiObj) {
+  for (const param in apiObj) {
     if (apiObj[param] !== '') {
       apiParams += `&${param + '=' + apiObj[param]}`;
     }
@@ -81,19 +80,19 @@ var createApiUrl = obj => {
 };
 
 // Define a function to create a high level overview of each park
-var renderParkHighLvl = (view, entry) => {
+const renderParkHighLvl = (view, entry) => {
   // Create elements
-  var $parkDiv = document.createElement('div');
-  var $imgDiv = document.createElement('div');
-  var $img = document.createElement('img');
-  var $detailsDiv = document.createElement('div');
-  var $titleDiv = document.createElement('div');
-  var $title = document.createElement('h2');
-  var $favIcon = document.createElement('i');
-  var $descDiv = document.createElement('div');
-  var $desc = document.createElement('p');
-  var $buttonDiv = document.createElement('div');
-  var $button = document.createElement('button');
+  const $parkDiv = document.createElement('div');
+  const $imgDiv = document.createElement('div');
+  const $img = document.createElement('img');
+  const $detailsDiv = document.createElement('div');
+  const $titleDiv = document.createElement('div');
+  const $title = document.createElement('h2');
+  const $favIcon = document.createElement('i');
+  const $descDiv = document.createElement('div');
+  const $desc = document.createElement('p');
+  const $buttonDiv = document.createElement('div');
+  const $button = document.createElement('button');
 
   // Assign standard attributes and content
   $parkDiv.className = 'park-high-lvl col-full';
@@ -138,12 +137,12 @@ var renderParkHighLvl = (view, entry) => {
   }
 };
 
-var filterData = response => {
-  for (var p = 0; p < response.data.length; p++) {
-    var matchCount = 0;
-    var matchArr = [];
-    var combinedData = [...response.data[p].activities, ...response.data[p].topics];
-    for (var t = 0; t < combinedData.length; t++) {
+const filterData = response => {
+  for (let p = 0; p < response.data.length; p++) {
+    let matchCount = 0;
+    const matchArr = [];
+    const combinedData = [...response.data[p].activities, ...response.data[p].topics];
+    for (let t = 0; t < combinedData.length; t++) {
       if (data.inputs.topics.includes(combinedData[t].name) && !matchArr.includes(combinedData[t].name)) {
         matchCount++;
         matchArr.push(combinedData[t].name);
@@ -156,9 +155,9 @@ var filterData = response => {
 };
 
 // Define a function to render park segments based on page number
-var renderParkChunks = pageNum => {
-  var xhrParkChunks = new XMLHttpRequest();
-  var totalPages = 0;
+const renderParkChunks = pageNum => {
+  const xhrParkChunks = new XMLHttpRequest();
+  let totalPages = 0;
   $homePage.innerHTML = '';
   $favParks.innerHTML = '';
   $footerPages.innerHTML = '';
@@ -178,7 +177,7 @@ var renderParkChunks = pageNum => {
   xhrParkChunks.responseType = 'json';
 
   xhrParkChunks.addEventListener('load', () => {
-    var response = xhrParkChunks.response;
+    const response = xhrParkChunks.response;
 
     if (data.inputs.filterStatus === true) {
       filterData(response);
@@ -207,8 +206,8 @@ var renderParkChunks = pageNum => {
 
     // Display parks based on page number/total
     if (data.view === 'home-filtered' || data.view === 'favorites-filtered') {
-      var start = 0;
-      var end = data.inputs.filteredTopics.length;
+      let start = 0;
+      let end = data.inputs.filteredTopics.length;
       if (data.inputs.filteredTopics.length > 10) {
         start = (pageNum - 1) * 10;
         if (pageNum < totalPages) {
@@ -219,14 +218,14 @@ var renderParkChunks = pageNum => {
         renderParkHighLvl(data.view, data.inputs.filteredTopics[start]);
       }
     } else {
-      for (var i = 0; i < response.data.length; i++) {
+      for (let i = 0; i < response.data.length; i++) {
         renderParkHighLvl(data.view, response.data[i]);
       }
     }
 
     // Create footer page form options
-    for (var tp = 1; tp <= totalPages; tp++) {
-      var $addtPage = document.createElement('option');
+    for (let tp = 1; tp <= totalPages; tp++) {
+      const $addtPage = document.createElement('option');
       $addtPage.setAttribute('value', tp);
       $addtPage.textContent = tp;
       $footerPages.appendChild($addtPage);
@@ -241,7 +240,7 @@ var renderParkChunks = pageNum => {
 };
 
 // Define a function to load the individual park view with corresponding data
-var loadIndivPark = () => {
+const loadIndivPark = () => {
   $topics.innerHTML = '';
   $activities.innerHTML = '';
   $thingsToDoHeader.classList.remove('hidden');
@@ -249,13 +248,13 @@ var loadIndivPark = () => {
   $topicsSection.classList.remove('hidden');
   $activitiesSection.classList.remove('hidden');
 
-  var xhrPark = new XMLHttpRequest();
+  const xhrPark = new XMLHttpRequest();
   xhrPark.open('GET', createApiUrl({ parkCode: data.targetPark }));
   xhrPark.responseType = 'json';
   xhrPark.addEventListener('load', event => {
-    var parkResp = xhrPark.response.data[0];
-    var parkAddr = parkResp.addresses.filter(address => address.type === 'Physical')[0];
-    var parkContacts = parkResp.contacts;
+    const parkResp = xhrPark.response.data[0];
+    const parkAddr = parkResp.addresses.filter(address => address.type === 'Physical')[0];
+    const parkContacts = parkResp.contacts;
 
     $pageHeader.textContent = parkResp.fullName;
     $indivParkImg.setAttribute('src', parkResp.images[0].url);
@@ -287,17 +286,16 @@ Email: ${parkContacts.emailAddresses[0].emailAddress}`;
       return 0;
     });
 
-    for (var t = 0; t < parkResp.topics.length; t++) {
+    for (let t = 0; t < parkResp.topics.length; t++) {
       if (data.topics.includes(parkResp.topics[t].name)) {
-        var $liTop = document.createElement('li');
+        const $liTop = document.createElement('li');
         $liTop.textContent = parkResp.topics[t].name;
         $topics.appendChild($liTop);
       }
     }
-
-    for (var a = 0; a < parkResp.activities.length; a++) {
+    for (let a = 0; a < parkResp.activities.length; a++) {
       if (data.activities.includes(parkResp.activities[a].name)) {
-        var $liAct = document.createElement('li');
+        const $liAct = document.createElement('li');
         $liAct.textContent = parkResp.activities[a].name;
         $activities.appendChild($liAct);
       }
@@ -315,16 +313,16 @@ Email: ${parkContacts.emailAddresses[0].emailAddress}`;
   xhrPark.send();
 };
 
-var loadFilters = () => {
+const loadFilters = () => {
   if (data.view === 'home-filtered' || data.view === 'favorites-filtered') {
     if (data.inputs.stateCode) {
-      for (var st of data.inputs.stateCode) {
+      for (const st of data.inputs.stateCode) {
         $filterForm.elements[st].checked = true;
       }
     }
     if (data.inputs.topics) {
-      for (var top of data.inputs.topics) {
-        var checkedId = top.split('').filter(char => char !== ' ').join('');
+      for (const top of data.inputs.topics) {
+        const checkedId = top.split('').filter(char => char !== ' ').join('');
         if (document.getElementById(checkedId)) {
           document.getElementById(checkedId).checked = true;
         }
@@ -334,8 +332,7 @@ var loadFilters = () => {
 };
 
 // Define a view-swapping function
-var viewSwap = () => {
-
+const viewSwap = () => {
   if (data.firstLoad && !data.reloaded) {
     data.pageNum = 1;
     data.view = 'home-page';
@@ -412,8 +409,8 @@ var viewSwap = () => {
 };
 
 // Define a function to favorite/unfavorite parks
-var favToggle = event => {
-  var targetIndex = 0;
+const favToggle = event => {
+  let targetIndex = 0;
 
   if (event.target.matches('.fa-regular')) {
     event.target.className = 'fa-solid fa-star';
@@ -442,30 +439,28 @@ var favToggle = event => {
 };
 
 // Define a function to add state options to the dropdown menu
-var filterDropdowns = () => {
-
+const filterDropdowns = () => {
   // Load states
   data.states.forEach(state => {
-    var $label = document.createElement('label');
-    var $input = document.createElement('input');
+    const $label = document.createElement('label');
+    const $input = document.createElement('input');
 
     $input.setAttribute('type', 'checkbox');
     $input.setAttribute('name', 'state');
     $input.setAttribute('value', state.abbreviation);
     $input.setAttribute('id', state.abbreviation);
-
     $label.appendChild($input);
     $label.insertAdjacentText('beforeend', '' + state.name);
     $stateOptions.appendChild($label);
   });
 
   // Load activities
-  var xhrAct = new XMLHttpRequest();
-  var activitiesList = [];
+  const xhrAct = new XMLHttpRequest();
+  const activitiesList = [];
   xhrAct.open('GET', 'https://developer.nps.gov/api/v1/activities/parks?api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo');
   xhrAct.responseType = 'json';
   xhrAct.addEventListener('load', () => {
-    for (var a = 0; a < xhrAct.response.data.length; a++) {
+    for (let a = 0; a < xhrAct.response.data.length; a++) {
       activitiesList.push(xhrAct.response.data[a].name);
       activitiesList.sort((a, b) => {
         if (a < b) {
@@ -479,9 +474,9 @@ var filterDropdowns = () => {
     }
     activitiesList.forEach(act => {
       data.activities.push(act);
-      var $label = document.createElement('label');
-      var $input = document.createElement('input');
-      var actId = act.split('').filter(char => char !== ' ').join('');
+      const $label = document.createElement('label');
+      const $input = document.createElement('input');
+      const actId = act.split('').filter(char => char !== ' ').join('');
 
       $input.setAttribute('type', 'checkbox');
       $input.setAttribute('name', 'activity');
@@ -497,12 +492,12 @@ var filterDropdowns = () => {
   xhrAct.send();
 
   // Load topics
-  var xhrTop = new XMLHttpRequest();
-  var topicsList = [];
+  const xhrTop = new XMLHttpRequest();
+  const topicsList = [];
   xhrTop.open('GET', 'https://developer.nps.gov/api/v1/topics?limit=100&api_key=tZEBxgl9PvWVA6IoZ6geyHDasBEnQ1XwFNc8lbeo');
   xhrTop.responseType = 'json';
   xhrTop.addEventListener('load', () => {
-    for (var t = 0; t < xhrTop.response.data.length; t++) {
+    for (let t = 0; t < xhrTop.response.data.length; t++) {
       topicsList.push(xhrTop.response.data[t].name);
       topicsList.sort((a, b) => {
         if (a < b) {
@@ -516,9 +511,9 @@ var filterDropdowns = () => {
     }
     topicsList.forEach(top => {
       data.topics.push(top);
-      var $label = document.createElement('label');
-      var $input = document.createElement('input');
-      var topId = top.split('').filter(char => char !== ' ').join('');
+      const $label = document.createElement('label');
+      const $input = document.createElement('input');
+      const topId = top.split('').filter(char => char !== ' ').join('');
 
       $input.setAttribute('type', 'checkbox');
       $input.setAttribute('name', 'topic');
@@ -537,7 +532,7 @@ var filterDropdowns = () => {
 filterDropdowns();
 
 // Define a filter modal toggle function
-var toggleFilterBar = () => {
+const toggleFilterBar = () => {
   if ($filterModal.matches('.hidden')) {
     $filterModal.classList.remove('hidden');
   } else {
@@ -545,7 +540,7 @@ var toggleFilterBar = () => {
   }
 };
 
-var toggleFilterOptions = option => {
+const toggleFilterOptions = option => {
   if (!option.nextElementSibling.className) {
     option.nextElementSibling.className = 'hidden';
     option.style.backgroundColor = 'white';
@@ -559,7 +554,7 @@ var toggleFilterOptions = option => {
   }
 };
 
-var filterFormCollapse = () => {
+const filterFormCollapse = () => {
   if (!$stateOptions.className) {
     toggleFilterOptions($stateDropdown);
   }
@@ -571,9 +566,9 @@ var filterFormCollapse = () => {
   }
 };
 
-var filterClear = event => {
+const filterClear = event => {
   event.preventDefault();
-  for (var e = 0; e < $filterForm.elements.length; e++) {
+  for (let e = 0; e < $filterForm.elements.length; e++) {
     if ($filterForm.elements[e].tagName === 'INPUT' && $filterForm.elements[e].checked) {
       $filterForm.elements[e].checked = false;
     }
@@ -581,17 +576,17 @@ var filterClear = event => {
   data.inputs = {};
 };
 
-var filterFormSearch = () => {
+const filterFormSearch = () => {
   toggleFilterBar();
   event.preventDefault();
-  var inputs = {
+  const inputs = {
     stateCode: [],
     topics: [],
     filteredTopics: [],
     filterStatus: true
   };
 
-  for (var e = 0; e < $filterForm.elements.length; e++) {
+  for (let e = 0; e < $filterForm.elements.length; e++) {
     if ($filterForm.elements[e].tagName === 'INPUT' && $filterForm.elements[e].checked) {
       switch ($filterForm.elements[e].name) {
         case 'state':
@@ -617,10 +612,7 @@ var filterFormSearch = () => {
   renderParkChunks(data.pageNum);
 };
 
-/**
- * Event listeners
- * */
-
+// ----- Event listeners -----
 document.addEventListener('DOMContentLoaded', () => {
   data.firstLoad = true;
   viewSwap();

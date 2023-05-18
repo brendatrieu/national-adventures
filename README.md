@@ -19,6 +19,5 @@ Try the application live at https://brendatrieu.github.io/ajax-project/
 - Users can view individual park details.
 - Users can favorite parks they want to visit.
 
-
 ## Preview
-![National Adventures](images/Kapture%202023-05-17%20at%2015.32.34.gif)
+![National Adventures](images/readme-preview.gif)
