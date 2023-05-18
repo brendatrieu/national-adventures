@@ -11,7 +11,7 @@ I was surprised to find there are over 400 national parks and only a handful I h
 - CSS3
 
 ## Live Demo
-Try the application live at https://brendatrieu.github.io/ajax-project/
+Try the application live at https://brendatrieu.github.io/national-adventures/
 
 ## Features
 - Users can view a list of all parks.
