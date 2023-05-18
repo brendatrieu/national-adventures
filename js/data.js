@@ -1,6 +1,6 @@
 /* exported data */
 
-var data = {
+let data = {
   view: 'home-page',
   pageNum: 1,
   targetPark: '',
